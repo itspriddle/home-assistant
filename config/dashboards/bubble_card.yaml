@@ -5,34 +5,8 @@ views:
     cards:
     - type: heading
       icon: mdi:calendar
-      heading: Today
+      heading: Now
       heading_style: title
-    # - type: custom:bubble-card
-    #   card_type: calendar
-    #   rows: 1
-    #   event_action:
-    #     tap_action:
-    #       action: more-info
-    #     double_tap_action:
-    #       action: none
-    #     hold_action:
-    #       action: none
-    #   sub_button:
-    #     main: []
-    #     bottom: []
-    #   entities:
-    #   - entity: calendar.josh_work
-    #     color: '#4C730A'
-    #   - entity: calendar.chrys
-    #     color: '#DC19D7'
-    #   grid_options:
-    #     rows: 2
-    #     columns: 12
-    #   show_end: false
-    #   show_progress: false
-    #   show_place: false
-    #   scrolling_effect: false
-    #   days: 1
     - type: custom:calendar-card-pro
       entities:
         - calendar.home
@@ -46,8 +20,6 @@ views:
           allowlist: 'zoom\.us'
       show_empty_days: true
       filter_duplicates: true
-
-      # show_single_allday_time: false
       show_location: false
       date_vertical_alignment: 'top'
       weather:
@@ -66,34 +38,13 @@ views:
           icon_size: 14px
           font_size: 12px
           color: var(--primary-text-color)
-
-    - type: horizontal-stack
-      cards:
-      - type: custom:bubble-card
-        card_type: button
-        button_type: state
-        sub_button:
-          main: []
-          bottom: []
-        entity: binary_sensor.josh_meeting
-        show_state: false
-        show_last_changed: false
-        show_attribute: false
-        attribute: icon
-        show_icon: true
-        button_action: {}
-        tap_action:
-          action: none
-      - type: custom:bubble-card
-        card_type: button
-        button_type: state
-        sub_button:
-          main: []
-          bottom: []
-        entity: binary_sensor.chrys_meeting
-        show_state: false
     - type: custom:clock-weather-card
       entity: weather.forecast_home
+    - type: custom:emby-now-playing-card
+      entity: sensor.emby_now_playing
+      library:
+      - sensor.emby_movies
+      - sensor.emby_episodes
   - type: grid
     cards:
     - type: heading
@@ -195,14 +146,6 @@ views:
         extrema: true
     - type: custom:bubble-card
       card_type: button
-      button_type: state
-      sub_button:
-        main: []
-        bottom: []
-      entity: binary_sensor.office_motion
-      show_last_changed: true
-    - type: custom:bubble-card
-      card_type: button
       button_type: slider
       sub_button:
         main: []
@@ -212,41 +155,6 @@ views:
       name: HVAC Usage
       attribute: state_class
       show_state: true
-    - type: custom:bubble-card
-      rows: 0.938
-      card_type: sub-buttons
-      sub_button:
-        main: []
-        bottom:
-        - entity: sensor.office_temperature
-          show_background: true
-          show_icon: true
-          force_icon: false
-          show_state: true
-          show_name: true
-          icon: mdi:thermometer
-          state_background: false
-          name: Office
-        - entity: sensor.bedroom_temperature
-          show_background: true
-          show_icon: true
-          force_icon: false
-          show_state: true
-          show_name: true
-          icon: mdi:thermometer
-          state_background: false
-          name: Bedroom
-        - entity: sensor.living_room_temperature
-          show_background: true
-          show_icon: true
-          force_icon: false
-          show_state: true
-          show_name: true
-          icon: mdi:thermometer
-          state_background: false
-          name: Living Room
-      hide_main_background: false
-      footer_mode: false
     - type: custom:mini-graph-card
       name: Heating History (Last 7 Days)
       icon: mdi:fire
@@ -260,42 +168,6 @@ views:
       aggregate_func: max
       hours_to_show: 168
       bar_spacing: 10
-  - type: grid
-    cards:
-    - type: heading
-      heading: New section
-    - type: custom:mini-graph-card
-      name: Internet Speed
-      icon: mdi:speedometer
-      line_color: cyan
-      decimals: 0
-      entities:
-      - entity: sensor.speedtest_tracker_download
-        name: Download
-        show_state: true
-        y_axis: primary
-      - entity: sensor.speedtest_tracker_upload
-        name: Upload
-        show_state: true
-        y_axis: secondary
-      group_by: hour
-      show:
-        labels: true
-        labels_secondary: true
-    - type: custom:mini-graph-card
-      entities:
-      - sensor.kauf_rack_plug_power
-  - type: grid
-    cards:
-    - type: heading
-      heading: Now Playing
-      heading_style: title
-      icon: mdi:play-box-multiple
-    - type: custom:emby-now-playing-card
-      entity: sensor.emby_now_playing
-      library:
-      - sensor.emby_movies
-      - sensor.emby_episodes
   badges:
   - type: entity
     show_name: true
@@ -412,17 +284,11 @@ views:
     - state
     - last_changed
   header:
-    card:
-      type: markdown
-      text_only: true
-      content: '# Hello {{ user }}
-
-        Add your text here, template variables are supported ✨'
     layout: center
     badges_position: top
     badges_wrap: wrap
   type: sections
-  max_columns: 4
+  max_columns: 2
   icon: mdi:home
   cards: []
 - title: Network
