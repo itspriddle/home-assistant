@@ -1,0 +1,58 @@
+# Home Assistant config for the Vision dashboard (M5Stack Tab5).
+#
+# Reload with Developer tools -> YAML -> "Template entities".
+#
+# Provides:
+#   sensor.vision_next_event  "Design review · 5:00 PM", or "none"
+#
+# The next timed (non all-day) event that starts within the next 12 hours
+# across Josh's work and home calendars. Events already in progress are
+# skipped; the meeting indicator covers those. Refreshed every 5 minutes and
+# whenever either calendar changes state (event start/end).
+
+template:
+  - triggers:
+      - trigger: time_pattern
+        minutes: "/5"
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: event_template_reloaded
+      - trigger: state
+        entity_id:
+          - calendar.josh_work
+          - calendar.home
+    actions:
+      - action: calendar.get_events
+        target:
+          entity_id:
+            - calendar.josh_work
+            - calendar.home
+        data:
+          duration:
+            hours: 12
+        response_variable: agenda
+    sensor:
+      - name: "Vision Next Event"
+        unique_id: vision_next_event
+        icon: mdi:calendar-clock
+        state: >
+          {% set now_ts = as_timestamp(now()) %}
+          {% set ns = namespace(title=none, ts=0) %}
+          {% for cal in agenda.values() %}
+            {% for e in cal.events | default([]) %}
+              {% set start = e.start | string %}
+              {% if 'T' in start %}
+                {% set ts = as_timestamp(start, 0) %}
+                {% if ts >= now_ts and (ns.title is none or ts < ns.ts) %}
+                  {% set ns.title = (e.summary | default('Busy', true) | trim)[:60] %}
+                  {% set ns.ts = ts %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          {% if ns.title is none %}
+            none
+          {% else %}
+            {{ ns.title }} · {{ (ns.ts | timestamp_custom('%I:%M %p')).lstrip('0') }}
+          {% endif %}

@@ -1,0 +1,104 @@
+# Daily forecast sensors for the Vision dashboard (M5Stack Tab5).
+# Day 0 is today. The Tab5 reads high/low for days 0-4 and condition/date for
+# days 1-4; add more here only when something consumes them.
+
+template:
+  - triggers:
+      - trigger: time_pattern
+        minutes: "/30"
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: weather.get_forecasts
+        target:
+          entity_id: weather.forecast_home
+        data:
+          type: daily
+        response_variable: forecast_response
+    sensor:
+      # ===== DAY 0 =====
+      - name: "forecast_0_temp_high"
+        unique_id: forecast_0_temp_high
+        state: "{{ forecast_response['weather.forecast_home'].forecast[0].temperature | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_0_temp_low"
+        unique_id: forecast_0_temp_low
+        state: "{{ forecast_response['weather.forecast_home'].forecast[0].templow | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      # ===== DAY 1 =====
+      - name: "forecast_1_condition"
+        unique_id: forecast_1_condition
+        state: "{{ forecast_response['weather.forecast_home'].forecast[1].condition | default('unknown') }}"
+
+      - name: "forecast_1_temp_high"
+        unique_id: forecast_1_temp_high
+        state: "{{ forecast_response['weather.forecast_home'].forecast[1].temperature | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_1_temp_low"
+        unique_id: forecast_1_temp_low
+        state: "{{ forecast_response['weather.forecast_home'].forecast[1].templow | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_1_date"
+        unique_id: forecast_1_date
+        state: "{{ as_timestamp(forecast_response['weather.forecast_home'].forecast[1].datetime) | timestamp_custom('%A') }}"
+
+      # ===== DAY 2 =====
+      - name: "forecast_2_condition"
+        unique_id: forecast_2_condition
+        state: "{{ forecast_response['weather.forecast_home'].forecast[2].condition | default('unknown') }}"
+
+      - name: "forecast_2_temp_high"
+        unique_id: forecast_2_temp_high
+        state: "{{ forecast_response['weather.forecast_home'].forecast[2].temperature | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_2_temp_low"
+        unique_id: forecast_2_temp_low
+        state: "{{ forecast_response['weather.forecast_home'].forecast[2].templow | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_2_date"
+        unique_id: forecast_2_date
+        state: "{{ as_timestamp(forecast_response['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%A') }}"
+
+      # ===== DAY 3 =====
+      - name: "forecast_3_condition"
+        unique_id: forecast_3_condition
+        state: "{{ forecast_response['weather.forecast_home'].forecast[3].condition | default('unknown') }}"
+
+      - name: "forecast_3_temp_high"
+        unique_id: forecast_3_temp_high
+        state: "{{ forecast_response['weather.forecast_home'].forecast[3].temperature | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_3_temp_low"
+        unique_id: forecast_3_temp_low
+        state: "{{ forecast_response['weather.forecast_home'].forecast[3].templow | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_3_date"
+        unique_id: forecast_3_date
+        state: "{{ as_timestamp(forecast_response['weather.forecast_home'].forecast[3].datetime) | timestamp_custom('%A') }}"
+
+      # ===== DAY 4 =====
+      - name: "forecast_4_condition"
+        unique_id: forecast_4_condition
+        state: "{{ forecast_response['weather.forecast_home'].forecast[4].condition | default('unknown') }}"
+
+      - name: "forecast_4_temp_high"
+        unique_id: forecast_4_temp_high
+        state: "{{ forecast_response['weather.forecast_home'].forecast[4].temperature | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_4_temp_low"
+        unique_id: forecast_4_temp_low
+        state: "{{ forecast_response['weather.forecast_home'].forecast[4].templow | default(0) | round(0) }}"
+        unit_of_measurement: "°F"
+
+      - name: "forecast_4_date"
+        unique_id: forecast_4_date
+        state: "{{ as_timestamp(forecast_response['weather.forecast_home'].forecast[4].datetime) | timestamp_custom('%A') }}"

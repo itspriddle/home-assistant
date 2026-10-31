@@ -1,0 +1,6 @@
+migration:
+  done: true
+  sources:
+    detected: files_exist
+  migrated_at: '2026-01-13T05:49:31.776Z'
+  version: 1

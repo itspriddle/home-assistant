@@ -1,0 +1,90 @@
+# Meeting/camera-in-use indicators from work calendars and Mac cameras.
+
+template:
+  - binary_sensor:
+      - name: "Meeting"
+        unique_id: meeting_active
+        icon: >
+          {% if this.state == 'on' %}
+            mdi:video
+          {% else %}
+            mdi:video-off
+          {% endif %}
+        state: >
+          {{ is_state('binary_sensor.josh_meeting', 'on') or is_state('binary_sensor.chrys_meeting', 'on') }}
+        attributes:
+          active_meetings: >
+            {% set calendars = [
+              ('Josh', 'calendar.josh_work'),
+              ('Chrys', 'calendar.chrys')
+            ] %}
+            {% set meeting_domains = ['meet.google.com', 'zoom.us', 'teams.microsoft.com'] %}
+            {% set ns = namespace(meetings=[]) %}
+            {% for name, cal in calendars %}
+              {% if is_state(cal, 'on') %}
+                {% set desc = state_attr(cal, 'description') or '' %}
+                {% set msg = state_attr(cal, 'message') or '' %}
+                {% set text = desc ~ ' ' ~ msg %}
+                {% for domain in meeting_domains %}
+                  {% if domain in text %}
+                    {% set ns.meetings = ns.meetings + [{
+                      'who': name,
+                      'title': msg,
+                      'start': state_attr(cal, 'start_time'),
+                      'end': state_attr(cal, 'end_time')
+                    }] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.meetings }}
+
+      - name: "Josh Camera"
+        unique_id: josh_camera_active
+        icon: >
+          {% if this.state == 'on' %}
+            mdi:camera
+          {% else %}
+            mdi:camera-off
+          {% endif %}
+        state: >
+          {{ is_state('binary_sensor.mac_mini_camera_in_use', 'on') or is_state('binary_sensor.macbook_air_camera_in_use', 'on') }}
+
+      - name: "Josh Meeting"
+        unique_id: josh_meeting_active
+        icon: >
+          {% if this.state == 'on' %}
+            mdi:video
+          {% else %}
+            mdi:video-off
+          {% endif %}
+        state: >
+          {% set desc = state_attr('calendar.josh_work', 'description') or '' %}
+          {% set msg = state_attr('calendar.josh_work', 'message') or '' %}
+          {% set text = desc ~ ' ' ~ msg %}
+          {% set has_link = 'meet.google.com' in text or 'zoom.us' in text or 'teams.microsoft.com' in text %}
+          {% set calendar_meeting = is_state('calendar.josh_work', 'on') and has_link %}
+          {{ calendar_meeting or is_state('binary_sensor.josh_camera', 'on') }}
+        attributes:
+          title: "{{ state_attr('calendar.josh_work', 'message') }}"
+          start: "{{ state_attr('calendar.josh_work', 'start_time') }}"
+          end: "{{ state_attr('calendar.josh_work', 'end_time') }}"
+
+      - name: "Chrys Meeting"
+        unique_id: chrys_meeting_active
+        icon: >
+          {% if this.state == 'on' %}
+            mdi:video
+          {% else %}
+            mdi:video-off
+          {% endif %}
+        state: >
+          {% set desc = state_attr('calendar.chrys', 'description') or '' %}
+          {% set msg = state_attr('calendar.chrys', 'message') or '' %}
+          {% set text = desc ~ ' ' ~ msg %}
+          {% set has_link = 'meet.google.com' in text or 'zoom.us' in text or 'teams.microsoft.com' in text %}
+          {{ is_state('calendar.chrys', 'on') and has_link }}
+        attributes:
+          title: "{{ state_attr('calendar.chrys', 'message') }}"
+          start: "{{ state_attr('calendar.chrys', 'start_time') }}"
+          end: "{{ state_attr('calendar.chrys', 'end_time') }}"

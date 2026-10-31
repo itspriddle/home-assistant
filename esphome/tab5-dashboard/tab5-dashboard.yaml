@@ -1,0 +1,151 @@
+substitutions:
+  name: vision
+  friendly_name: Vision
+  timezone: America/New_York
+  api_encryption_key: !secret tab5__api_encryption_key
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2026.2.0
+
+packages:
+  device: !include packages/device.yaml
+  network: !include packages/network.yaml
+  audio: !include packages/audio.yaml
+  homeassistant: !include packages/homeassistant.yaml
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [dashboard]
+
+# ============================================================
+# UI — built in C++ by components/dashboard
+# ============================================================
+lvgl:
+  displays:
+    - main_display
+  touchscreens:
+    - main_touchscreen
+  # Landscape with the USB-C port on the left
+  rotation: 270
+  buffer_size: 100%
+  byte_order: little_endian
+  disp_bg_color: 0x121212
+
+dashboard:
+  id: dash
+  time_id: rtc_time
+  idle_timeout: 60s
+  # No touch / presence for 10 min -> clock screen; another 10 -> dim
+  clock_timeout: 10min
+  dim_timeout: 20min
+  backlight_id: backlight
+  dim_brightness: 3%
+  fonts:
+    caption: inter_18
+    small: inter_20
+    body: inter_22
+    label: inter_26
+    value: inter_34
+    title: inter_40
+    large: inter_96
+    display: inter_140
+    clock: inter_168
+    clock_xl: inter_260
+    icon_small: mdi_34
+    icon_medium: mdi_44
+    icon_large: mdi_88
+
+# ============================================================
+# Fonts
+# ============================================================
+# Text sizes get Latin basics plus a few typographic extras; the big
+# numeric sizes only carry the glyphs they render.
+font:
+  - id: inter_18
+    file: "gfonts://Inter"
+    size: 18
+    bpp: 4
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: &extras "°·−–…•"
+  - id: inter_20
+    file: "gfonts://Inter"
+    size: 20
+    bpp: 4
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: *extras
+  - id: inter_22
+    file: "gfonts://Inter"
+    size: 22
+    bpp: 4
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: *extras
+  - id: inter_26
+    file: "gfonts://Inter@600"
+    size: 26
+    bpp: 4
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: *extras
+  - id: inter_34
+    file: "gfonts://Inter@500"
+    size: 34
+    bpp: 4
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: *extras
+  - id: inter_40
+    file: "gfonts://Inter@600"
+    size: 40
+    bpp: 4
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: *extras
+  - id: inter_96
+    file: "gfonts://Inter"
+    size: 96
+    bpp: 4
+    glyphs: "0123456789-−.%° "
+  - id: inter_140
+    file: "gfonts://Inter"
+    size: 140
+    bpp: 4
+    glyphs: "0123456789-−.° Of"
+  - id: inter_168
+    file: "gfonts://Inter@500"
+    size: 168
+    bpp: 4
+    glyphs: "0123456789:- "
+  - id: inter_260
+    file: "gfonts://Inter@500"
+    size: 260
+    bpp: 4
+    glyphs: "0123456789:- "
+
+  # Material Design Icons. Keep in sync with icon:: in theme.h
+  - id: mdi_34
+    file: &mdi "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
+    size: 34
+    bpp: 4
+    glyphs: &mdi_ui [
+      "\U000F02DC", "\U000F0335", "\U000F0336", "\U000F050F", "\U000F0425",
+      "\U000F042B", "\U000F00ED", "\U000F058E", "\U000F0374", "\U000F0415",
+      "\U000F0238", "\U000F0717", "\U000F05AA",
+    ]
+  - id: mdi_44
+    file: *mdi
+    size: 44
+    bpp: 4
+    glyphs: &mdi_all [
+      "\U000F02DC", "\U000F0335", "\U000F0336", "\U000F050F", "\U000F0425",
+      "\U000F042B", "\U000F00ED", "\U000F058E", "\U000F0374", "\U000F0415",
+      "\U000F0238", "\U000F0717", "\U000F05AA",
+      "\U000F0599", "\U000F0594", "\U000F0595", "\U000F0590", "\U000F0597",
+      "\U000F0596", "\U000F0598", "\U000F0591", "\U000F0593", "\U000F067E",
+      "\U000F059D", "\U000F0592",
+    ]
+  - id: mdi_88
+    file: *mdi
+    size: 88
+    bpp: 4
+    glyphs: *mdi_all

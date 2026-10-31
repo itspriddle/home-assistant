@@ -1,0 +1,19 @@
+# Kauf PLF12 smart plug: KaufHA firmware with our base on top.
+#
+# Expects substitutions: name, friendly_name, api_encryption_key.
+#
+# Package order matters: later packages override earlier ones, so base.yaml
+# comes after the Kauf package to replace its placeholder wifi/api settings.
+
+packages:
+  kauf: github://KaufHA/kauf-plugs/packages/kauf-plf12.yaml@v2.14
+  base: !include base.yaml
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
+
+select:
+  - id: !extend select_bled
+    initial_option: Error Status

@@ -1,0 +1,43 @@
+substitutions:
+  name: dot-matrix-dad
+  api_encryption_key: !secret api_encryption_key
+
+packages:
+  base: !include ../common/base.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "Dot Matrix Dad"
+
+esp8266:
+  board: huzzah
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+# Feather HUZZAH (ESP8266): single 4-in-1 MAX7219 board (32x8).
+# Wiring: CLK -> 14 (SCK), DIN -> 13 (MOSI), CS -> 15, VCC -> USB, GND -> GND
+# USB pin is only live on USB power; a LiPo alone can't drive the MAX7219.
+font:
+  - file: "gfonts://Silkscreen"
+    id: font_pixel
+    size: 8
+
+spi:
+  clk_pin: GPIO14
+  mosi_pin: GPIO13
+
+display:
+  - platform: max7219digit
+    id: matrix
+    cs_pin: GPIO15
+    num_chips: 4
+    # Keep low while powered from USB (0-15)
+    intensity: 2
+    scroll_enable: true
+    scroll_speed: 50ms
+    lambda: |-
+      it.print(0, 7, id(font_pixel), TextAlign::BASELINE_LEFT, "HELLO DAD");

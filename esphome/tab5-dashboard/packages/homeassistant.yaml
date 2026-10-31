@@ -1,0 +1,433 @@
+# Home Assistant -> dashboard state, and dashboard touch -> HA actions.
+#
+# Every HA entity is mirrored with `internal: true` so nothing is
+# re-exported back to HA. Missing values:
+#   - numeric sensors publish NaN for unavailable/unknown/absent attributes
+#   - text values of "unavailable"/"unknown" are passed as ""
+#   - on/off entities use text_sensors (not binary_sensors) so that
+#     "unavailable" turns them off instead of keeping the last state
+#
+# HA must allow this device to perform actions (ESPHome integration ->
+# Vision -> Configure -> "Allow the device to perform Home Assistant actions").
+
+# ============================================================
+# HA -> dashboard: numeric values
+# ============================================================
+sensor:
+  # ---- Weather ----
+  - platform: homeassistant
+    id: ha_weather_temperature
+    entity_id: weather.forecast_home
+    attribute: temperature
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_weather_temperature(x);'
+
+  # Day 0 of the forecast is today
+  - platform: homeassistant
+    id: ha_today_high
+    entity_id: sensor.forecast_0_temp_high
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_today_high(x);'
+  - platform: homeassistant
+    id: ha_today_low
+    entity_id: sensor.forecast_0_temp_low
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_today_low(x);'
+
+  # Forecast days 1..4 -> dashboard slots 0..3 (0 = tomorrow)
+  - platform: homeassistant
+    id: ha_forecast_1_high
+    entity_id: sensor.forecast_1_temp_high
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_high(0, x);'
+  - platform: homeassistant
+    id: ha_forecast_1_low
+    entity_id: sensor.forecast_1_temp_low
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_low(0, x);'
+  - platform: homeassistant
+    id: ha_forecast_2_high
+    entity_id: sensor.forecast_2_temp_high
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_high(1, x);'
+  - platform: homeassistant
+    id: ha_forecast_2_low
+    entity_id: sensor.forecast_2_temp_low
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_low(1, x);'
+  - platform: homeassistant
+    id: ha_forecast_3_high
+    entity_id: sensor.forecast_3_temp_high
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_high(2, x);'
+  - platform: homeassistant
+    id: ha_forecast_3_low
+    entity_id: sensor.forecast_3_temp_low
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_low(2, x);'
+  - platform: homeassistant
+    id: ha_forecast_4_high
+    entity_id: sensor.forecast_4_temp_high
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_high(3, x);'
+  - platform: homeassistant
+    id: ha_forecast_4_low
+    entity_id: sensor.forecast_4_temp_low
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_forecast_low(3, x);'
+
+  # ---- Room temperatures ----
+  # The thermostat's own reading doubles as the climate "current" value
+  - platform: homeassistant
+    id: ha_thermostat_temperature
+    entity_id: sensor.thermostat_current_temperature
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_room_temperature("thermostat", x);
+          id(dash).set_climate_current(x);
+  - platform: homeassistant
+    id: ha_office_temperature
+    entity_id: sensor.office_temperature
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_temperature("office", x);'
+  - platform: homeassistant
+    id: ha_living_room_temperature
+    entity_id: sensor.living_room_temperature
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_temperature("living_room", x);'
+  - platform: homeassistant
+    id: ha_kitchen_temperature
+    entity_id: sensor.shelly_h_t_kitchen_temperature
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_temperature("kitchen", x);'
+  - platform: homeassistant
+    id: ha_bedroom_temperature
+    entity_id: sensor.bedroom_temperature
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_temperature("bedroom", x);'
+
+  # ---- Room humidity (Shelly BLU H&T per area) ----
+  - platform: homeassistant
+    id: ha_thermostat_humidity
+    entity_id: sensor.thermostat_current_humidity
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_room_humidity("thermostat", x);
+          id(dash).set_climate_humidity(x);
+  - platform: homeassistant
+    id: ha_office_humidity
+    entity_id: sensor.shelly_blu_h_t_2a9f_humidity
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_humidity("office", x);'
+  - platform: homeassistant
+    id: ha_living_room_humidity
+    entity_id: sensor.sbht_203c_56f3_humidity
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_humidity("living_room", x);'
+  - platform: homeassistant
+    id: ha_kitchen_humidity
+    entity_id: sensor.shelly_h_t_kitchen_humidity
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_humidity("kitchen", x);'
+  - platform: homeassistant
+    id: ha_bedroom_humidity
+    entity_id: sensor.sbht_203c_0a61_humidity
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_humidity("bedroom", x);'
+
+  # ---- Light brightness (0-255; attribute is absent while off -> NaN) ----
+  - platform: homeassistant
+    id: ha_living_room_brightness
+    entity_id: light.living_room_all
+    attribute: brightness
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_brightness("living_room", x);'
+  - platform: homeassistant
+    id: ha_kitchen_brightness
+    entity_id: light.kitchen_all
+    attribute: brightness
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_brightness("kitchen", x);'
+  - platform: homeassistant
+    id: ha_office_brightness
+    entity_id: light.office
+    attribute: brightness
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_brightness("office", x);'
+  - platform: homeassistant
+    id: ha_bedroom_brightness
+    entity_id: light.bedroom_all
+    attribute: brightness
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_brightness("bedroom", x);'
+  - platform: homeassistant
+    id: ha_hallway_brightness
+    entity_id: light.hallway_all
+    attribute: brightness
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_brightness("hallway", x);'
+
+  # ---- Thermostat setpoint (null in heat_cool mode -> NaN) ----
+  - platform: homeassistant
+    id: ha_climate_setpoint
+    entity_id: climate.thermostat
+    attribute: temperature
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_climate_setpoint(x);'
+
+  # ---- 3D printer ----
+  - platform: homeassistant
+    id: ha_printer_progress
+    entity_id: sensor.p2s_22e8aj5c1700577_print_progress
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_printer_progress(x);'
+
+# ============================================================
+# HA -> dashboard: text and on/off values
+# ============================================================
+text_sensor:
+  # ---- Weather conditions ----
+  - platform: homeassistant
+    id: ha_weather_condition
+    entity_id: weather.forecast_home
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_weather_condition(x == "unavailable" || x == "unknown" ? std::string() : x);
+
+  - platform: homeassistant
+    id: ha_forecast_1_day
+    entity_id: sensor.forecast_1_date
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_day(0, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_1_condition
+    entity_id: sensor.forecast_1_condition
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_condition(0, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_2_day
+    entity_id: sensor.forecast_2_date
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_day(1, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_2_condition
+    entity_id: sensor.forecast_2_condition
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_condition(1, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_3_day
+    entity_id: sensor.forecast_3_date
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_day(2, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_3_condition
+    entity_id: sensor.forecast_3_condition
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_condition(2, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_4_day
+    entity_id: sensor.forecast_4_date
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_day(3, x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_forecast_4_condition
+    entity_id: sensor.forecast_4_condition
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_forecast_condition(3, x == "unavailable" || x == "unknown" ? std::string() : x);
+
+  # ---- Occupancy (kitchen has no occupancy sensor) ----
+  - platform: homeassistant
+    id: ha_thermostat_occupancy
+    entity_id: binary_sensor.thermostat_occupancy
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_occupied("thermostat", x == "on");'
+  - platform: homeassistant
+    id: ha_office_occupancy
+    entity_id: binary_sensor.office_occupancy
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_room_occupied("office", x == "on");
+          id(dash).set_presence(x == "on");
+  - platform: homeassistant
+    id: ha_living_room_occupancy
+    entity_id: binary_sensor.living_room_occupancy
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_occupied("living_room", x == "on");'
+  - platform: homeassistant
+    id: ha_bedroom_occupancy
+    entity_id: binary_sensor.bedroom_occupancy
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_room_occupied("bedroom", x == "on");'
+
+  # ---- Lights on/off ----
+  - platform: homeassistant
+    id: ha_living_room_light
+    entity_id: light.living_room_all
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_on("living_room", x == "on");'
+  - platform: homeassistant
+    id: ha_kitchen_light
+    entity_id: light.kitchen_all
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_on("kitchen", x == "on");'
+  - platform: homeassistant
+    id: ha_office_light
+    entity_id: light.office
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_on("office", x == "on");'
+  - platform: homeassistant
+    id: ha_bedroom_light
+    entity_id: light.bedroom_all
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_on("bedroom", x == "on");'
+  - platform: homeassistant
+    id: ha_hallway_light
+    entity_id: light.hallway_all
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_light_on("hallway", x == "on");'
+
+  # ---- Thermostat ----
+  - platform: homeassistant
+    id: ha_climate_mode
+    entity_id: climate.thermostat
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_climate_mode(x == "unavailable" || x == "unknown" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_climate_action
+    entity_id: climate.thermostat
+    attribute: hvac_action
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_climate_action(x == "unavailable" || x == "unknown" || x == "None" ? std::string() : x);
+
+  # ---- Status ----
+  - platform: homeassistant
+    id: ha_meeting
+    entity_id: binary_sensor.josh_meeting
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_meeting(x == "on");'
+  # From config/packages/vision.yaml; "none" means nothing coming up
+  - platform: homeassistant
+    id: ha_next_event
+    entity_id: sensor.vision_next_event
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_next_event(x == "unavailable" || x == "unknown" || x == "none" ? std::string() : x);
+  - platform: homeassistant
+    id: ha_printer_status
+    entity_id: sensor.p2s_22e8aj5c1700577_print_status
+    internal: true
+    on_value:
+      - lambda: |-
+          id(dash).set_printer_status(x == "unavailable" || x == "unknown" ? std::string() : x);
+
+# ============================================================
+# Dashboard -> HA actions (merged into the dashboard: block in tab5-dashboard.yaml)
+# ============================================================
+dashboard:
+  on_light_toggle:
+    - homeassistant.action:
+        action: light.toggle
+        data:
+          entity_id: !lambda 'return entity_id;'
+
+  on_light_brightness:
+    - if:
+        condition:
+          lambda: 'return brightness_pct <= 0;'
+        then:
+          - homeassistant.action:
+              action: light.turn_off
+              data:
+                entity_id: !lambda 'return entity_id;'
+        else:
+          - homeassistant.action:
+              action: light.turn_on
+              data:
+                entity_id: !lambda 'return entity_id;'
+                brightness_pct: !lambda 'return brightness_pct;'
+
+  on_lights_off:
+    - homeassistant.action:
+        action: light.turn_off
+        data:
+          entity_id: light.living_room_all, light.kitchen_all, light.office, light.bedroom_all, light.hallway_all
+
+  on_scene:
+    - homeassistant.action:
+        action: scene.turn_on
+        data:
+          entity_id: !lambda 'return entity_id;'
+
+  on_climate_temperature:
+    - homeassistant.action:
+        action: climate.set_temperature
+        data:
+          entity_id: climate.thermostat
+          temperature: !lambda 'return temperature;'
+
+  on_climate_mode:
+    - homeassistant.action:
+        action: climate.set_hvac_mode
+        data:
+          entity_id: climate.thermostat
+          hvac_mode: !lambda 'return mode;'

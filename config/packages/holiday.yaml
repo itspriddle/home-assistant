@@ -1,0 +1,29 @@
+# Holiday plugs (Zigbee2MQTT): on at 8am, off at 2:30am.
+# The Shelly button toggle ("Xmas Toggle") is UI-made and lives in automations.yaml.
+
+automation:
+  - id: holiday-plugs-on
+    alias: Holiday Plugs - On at 8am
+    triggers:
+      - trigger: time
+        at: "08:00:00"
+    actions:
+      - action: switch.turn_on
+        target:
+          entity_id:
+            - switch.snowman_plug
+            - switch.xmas_tree_plug
+    mode: single
+
+  - id: holiday-plugs-off
+    alias: Holiday Plugs - Off at 2:30am
+    triggers:
+      - trigger: time
+        at: "02:30:00"
+    actions:
+      - action: switch.turn_off
+        target:
+          entity_id:
+            - switch.snowman_plug
+            - switch.xmas_tree_plug
+    mode: single

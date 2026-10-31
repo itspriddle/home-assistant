@@ -1,0 +1,71 @@
+# Waveshare ESP32-C6 with 1.47" ST7789V LCD (172x320, mounted landscape).
+# Provides: main_display, backlight, boot_button.
+
+esp32:
+  board: esp32-c6-devkitc-1
+  framework:
+    type: esp-idf
+
+# --- SPI bus ---
+spi:
+  clk_pin: GPIO7
+  mosi_pin: GPIO6
+
+# --- Backlight PWM ---
+output:
+  - id: backlight_pwm
+    platform: ledc
+    pin: GPIO22
+
+light:
+  - id: backlight
+    platform: monochromatic
+    output: backlight_pwm
+    name: "Display Backlight"
+    restore_mode: ALWAYS_ON
+
+  # - platform: esp32_rmt_led_strip
+  #   name: "Status LED"
+  #   id: status_led
+  #   pin: GPIO8
+  #   rgb_order: RGB
+  #   num_leds: 1
+  #   chipset: ws2812
+  #   restore_mode: ALWAYS_OFF
+  #   gamma_correct: 2.8
+  #   default_transition_length: 0.2s
+
+# --- ST7789V 1.47" 172x320 display ---
+display:
+  - id: main_display
+    platform: mipi_spi
+    model: ST7789V
+    dc_pin:
+      number: GPIO15
+      ignore_strapping_warning: true
+    cs_pin: GPIO14
+    reset_pin: GPIO21
+    color_order: bgr
+    color_depth: 16
+    data_rate: 10MHz
+    invert_colors: true
+    spi_mode: MODE3
+    auto_clear_enabled: false
+    update_interval: never
+    # Geometry for Waveshare 1.47" 172x320 panel, in native (portrait)
+    # orientation; mipi_spi applies rotation on top of this.
+    dimensions:
+      width: 172
+      height: 320
+      offset_width: 34
+      offset_height: 0
+
+# --- Boot button ---
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Boot Button"
+    id: boot_button

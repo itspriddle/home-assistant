@@ -1,0 +1,18 @@
+substitutions:
+  name: kauf-plug-rack
+  friendly_name: Kauf Rack Plug
+  timezone: America/New_York
+  api_encryption_key: !secret kauf_plug_rack__api_encryption_key
+
+packages:
+  plug: !include common/kauf-plug.yaml
+
+switch:
+  - id: !extend relay
+    internal: true
+
+select:
+  - id: !extend select_button
+    initial_option: Don't Toggle
+  - id: !extend select_boot_state
+    initial_option: Always On

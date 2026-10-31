@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+set -e
+
+: "${DEPLOY_HOST:?Must set DEPLOY_HOST}"
+DEPLOY_PATH="${DEPLOY_PATH:-/opt/stacks/homeassistant}"
+
+usage() {
+    echo "Usage: $(basename "$0") [options]"
+    echo ""
+    echo "Options:"
+    echo "  -r, --restart    Restart containers after pull (default: only if compose.yaml changed)"
+    echo "  -h, --help       Show this help"
+    exit 1
+}
+
+restart_mode="auto"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -r|--restart)
+            restart_mode="always"
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Error: Unknown option '$1'"
+            usage
+            ;;
+    esac
+done
+
+echo "Deploying to ${DEPLOY_HOST}:${DEPLOY_PATH}..."
+
+ssh "$DEPLOY_HOST" bash -s "$DEPLOY_PATH" "$restart_mode" << 'EOF'
+set -e
+cd "$1"
+restart_mode="$2"
+
+echo "Pulling latest changes..."
+before_hash=$(git rev-parse HEAD)
+git pull --ff-only
+
+after_hash=$(git rev-parse HEAD)
+
+if [ "$before_hash" = "$after_hash" ]; then
+    echo "Already up to date."
+    exit 0
+fi
+
+echo "Updated: ${before_hash:0:7} -> ${after_hash:0:7}"
+git log --oneline "${before_hash}..${after_hash}"
+
+compose_changed=$(git diff --name-only "$before_hash" "$after_hash" | grep -c '^compose\.yaml$' || true)
+
+if [ "$restart_mode" = "always" ] || [ "$compose_changed" -gt 0 ]; then
+    echo ""
+    echo "Restarting containers..."
+    docker compose up -d
+else
+    echo ""
+    echo "Config files changed. Restart containers manually or use -r flag."
+fi
+EOF
+
+echo "Done."

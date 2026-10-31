@@ -1,0 +1,14 @@
+# Connectivity: WiFi, Home Assistant API, OTA, and the debug web server
+# (which also hosts the /screenshot endpoint).
+
+ota:
+  - platform: esphome
+    encryption:
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [lvgl_screenshot]
+
+lvgl_screenshot:

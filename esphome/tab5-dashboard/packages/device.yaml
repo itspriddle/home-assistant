@@ -1,0 +1,192 @@
+# M5Stack Tab5 hardware: SoC, PSRAM, I/O expanders, display, touch,
+# backlight, RTC, and battery monitoring. Nothing here depends on the UI.
+
+esp32:
+  board: esp32-p4-evboard
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    version: recommended
+    sdkconfig_options:
+      CONFIG_SPIRAM: "y"
+      CONFIG_SPIRAM_SPEED_200M: "y"
+      CONFIG_SPIRAM_RODATA: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
+      CONFIG_MBEDTLS_EXTERNAL_MEM_ALLOC: "y"
+    advanced:
+      enable_idf_experimental_features: true
+
+psram:
+  mode: hex
+  speed: 200MHz
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+
+# WiFi is provided by the on-board ESP32-C6 over SDIO
+esp32_hosted:
+  variant: esp32c6
+  active_high: true
+  clk_pin: GPIO12
+  cmd_pin: GPIO13
+  d0_pin: GPIO11
+  d1_pin: GPIO10
+  d2_pin: GPIO9
+  d3_pin: GPIO8
+  reset_pin: GPIO15
+  slot: 1
+
+i2c:
+  - id: bsp_bus
+    sda: GPIO31
+    scl: GPIO32
+    frequency: 400kHz
+
+pi4ioe5v6408:
+  - id: pi4ioe1
+    address: 0x43
+  - id: pi4ioe2
+    address: 0x44
+
+switch:
+  - platform: gpio
+    id: wifi_power
+    name: "WiFi Power"
+    pin:
+      pi4ioe5v6408: pi4ioe2
+      number: 0
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    id: charge_enable
+    name: "Charge Enable"
+    pin:
+      pi4ioe5v6408: pi4ioe2
+      number: 7
+    restore_mode: ALWAYS_ON
+
+button:
+  - platform: restart
+    id: restart_button
+    name: "Restart"
+
+# ------------------------------------------------------------
+# Display + touch
+# ------------------------------------------------------------
+esp_ldo:
+  - voltage: 2.5V
+    channel: 3
+
+display:
+  - platform: mipi_dsi
+    id: main_display
+    model: M5STACK-TAB5-ST7123
+    # Native portrait; landscape rotation is set on `lvgl:` in tab5-dashboard.yaml
+    dimensions:
+      width: 720
+      height: 1280
+    reset_pin:
+      pi4ioe5v6408: pi4ioe1
+      number: 4
+    show_test_card: false
+    auto_clear_enabled: false
+    update_interval: never
+
+touchscreen:
+  - platform: st7123
+    id: main_touchscreen
+    i2c_id: bsp_bus
+    interrupt_pin: GPIO23
+    # The driver finishes init (incl. attaching the interrupt) in update();
+    # it stops polling on its own once interrupts are live.
+    reset_pin:
+      pi4ioe5v6408: pi4ioe1
+      number: 5
+    # Raw touch is native portrait (720x1280); LVGL applies its own
+    # rotation to touch points, so no transform here.
+    calibration:
+      x_min: 0
+      x_max: 720
+      y_min: 0
+      y_max: 1280
+
+output:
+  - platform: ledc
+    id: backlight_pwm
+    pin: GPIO22
+    frequency: 1000Hz
+    # The backlight driver saturates around 11% duty; scale the light's
+    # 0-100% onto the range that actually changes brightness
+    max_power: 15%
+
+light:
+  - platform: monochromatic
+    id: backlight
+    name: "Display Backlight"
+    output: backlight_pwm
+    # Off until LVGL has drawn its first frame (see on_boot below)
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 250ms
+    gamma_correct: 1.8
+
+esphome:
+  on_boot:
+    - priority: -100
+      then:
+        - light.turn_on: backlight
+
+# ------------------------------------------------------------
+# Time: Home Assistant when connected, RTC as backup
+# ------------------------------------------------------------
+time:
+  - platform: homeassistant
+    id: ha_time
+    timezone: ${timezone}
+    on_time_sync:
+      then:
+        - rx8130.write_time:
+            id: rtc_time
+  - platform: rx8130
+    id: rtc_time
+    timezone: ${timezone}
+
+# ------------------------------------------------------------
+# Battery (NP-F550, 2S Li-ion: 6.0V empty / 8.4V full)
+# ------------------------------------------------------------
+sensor:
+  - platform: ina226
+    address: 0x41
+    adc_averaging: 16
+    max_current: 8.192A
+    shunt_resistance: 0.005ohm
+    bus_voltage:
+      id: battery_voltage
+      name: "Battery Voltage"
+    current:
+      id: battery_current
+      name: "Battery Current"
+
+  - platform: template
+    id: battery_percent
+    name: "Battery Percentage"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    update_interval: 10s
+    lambda: |-
+      float v = id(battery_voltage).state;
+      if (isnan(v) || v <= 6.0f) return 0.0f;
+      if (v >= 8.4f) return 100.0f;
+      return (v - 6.0f) / 2.4f * 100.0f;
+    filters:
+      - throttle: 60s
+
+binary_sensor:
+  - platform: gpio
+    id: charging
+    name: "Charging"
+    pin:
+      pi4ioe5v6408: pi4ioe2
+      number: 6
+      mode: INPUT_PULLDOWN
+    filters:
+      - delayed_on: 1s
+      - delayed_off: 1s

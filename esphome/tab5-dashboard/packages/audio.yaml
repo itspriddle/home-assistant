@@ -1,0 +1,67 @@
+# Audio: ES8388 codec -> NS4150B amp -> internal speaker. Plays a boot chime.
+
+i2s_audio:
+  - id: audio_bus
+    i2s_lrclk_pin: GPIO29
+    i2s_bclk_pin: GPIO27
+    i2s_mclk_pin: GPIO30
+
+audio_dac:
+  - platform: es8388
+    id: es8388_dac
+
+select:
+  - platform: es8388
+    dac_output:
+      id: dac_output_select
+      name: "DAC Output"
+
+switch:
+  - platform: gpio
+    id: speaker_enable
+    name: "Speaker Enable"
+    pin:
+      pi4ioe5v6408: pi4ioe1
+      number: 1
+    restore_mode: ALWAYS_ON
+
+speaker:
+  - platform: i2s_audio
+    id: tab5_speaker
+    i2s_dout_pin: GPIO26
+    audio_dac: es8388_dac
+    dac_type: external
+    channel: mono
+    buffer_duration: 100ms
+    bits_per_sample: 16bit
+    sample_rate: 48000
+
+media_player:
+  - platform: speaker
+    id: tab5_media_player
+    name: "Media Player"
+    announcement_pipeline:
+      speaker: tab5_speaker
+      format: FLAC
+      sample_rate: 48000
+      num_channels: 1
+    files:
+      - id: boot_sound
+        file: boot.flac
+
+esphome:
+  on_boot:
+    - priority: -100
+      then:
+        - delay: 3s  # Audio subsystem needs time to settle
+        - select.set:
+            id: dac_output_select
+            option: "LINE1"
+        - delay: 200ms
+        - media_player.volume_set:
+            id: tab5_media_player
+            volume: 80%
+        - delay: 200ms
+        - media_player.speaker.play_on_device_media_file:
+            media_file: boot_sound
+            announcement: true

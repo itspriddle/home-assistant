@@ -1,0 +1,105 @@
+# Thermostat HVAC state and heating/cooling runtime.
+
+template:
+  - sensor:
+      - name: "Thermostat HVAC Action"
+        unique_id: thermostat_hvac_action
+        state: "{{ state_attr('climate.thermostat', 'hvac_action') }}"
+
+  - binary_sensor:
+      - name: "Thermostat Heating"
+        unique_id: thermostat_heating
+        state: "{{ state_attr('climate.thermostat', 'hvac_action') == 'heating' }}"
+        device_class: running
+
+      - name: "Thermostat Cooling"
+        unique_id: thermostat_cooling
+        state: "{{ state_attr('climate.thermostat', 'hvac_action') == 'cooling' }}"
+        device_class: running
+
+      - name: "Thermostat Running"
+        unique_id: thermostat_running
+        state: "{{ state_attr('climate.thermostat', 'hvac_action') in ['heating', 'cooling'] }}"
+        device_class: running
+
+sensor:
+  - platform: history_stats
+    name: "Thermostat Heating Today"
+    unique_id: thermostat_heating_today
+    entity_id: binary_sensor.thermostat_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Cooling Today"
+    unique_id: thermostat_cooling_today
+    entity_id: binary_sensor.thermostat_cooling
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Running Today"
+    unique_id: thermostat_running_today
+    entity_id: binary_sensor.thermostat_running
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Heating This Week"
+    unique_id: thermostat_heating_this_week
+    entity_id: binary_sensor.thermostat_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') - timedelta(days=now().weekday()) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Cooling This Week"
+    unique_id: thermostat_cooling_this_week
+    entity_id: binary_sensor.thermostat_cooling
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') - timedelta(days=now().weekday()) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Running This Week"
+    unique_id: thermostat_running_this_week
+    entity_id: binary_sensor.thermostat_running
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') - timedelta(days=now().weekday()) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Heating This Month"
+    unique_id: thermostat_heating_this_month
+    entity_id: binary_sensor.thermostat_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00').replace(day=1) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Cooling This Month"
+    unique_id: thermostat_cooling_this_month
+    entity_id: binary_sensor.thermostat_cooling
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00').replace(day=1) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Thermostat Running This Month"
+    unique_id: thermostat_running_this_month
+    entity_id: binary_sensor.thermostat_running
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00').replace(day=1) }}"
+    end: "{{ now() }}"

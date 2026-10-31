@@ -1,0 +1,11 @@
+substitutions:
+  name: kauf-plug-f1e42f
+  friendly_name: Kauf Plug (Rack Light)
+  api_encryption_key: !secret kauf_plug_rack_light__api_encryption_key
+
+packages:
+  plug: !include common/kauf-plug.yaml
+
+select:
+  - id: !extend select_button
+    initial_option: Don't Toggle

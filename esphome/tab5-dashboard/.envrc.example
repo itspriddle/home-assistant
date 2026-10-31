@@ -1,0 +1,8 @@
+# Home Assistant API access
+# Get a long-lived token: HA → Profile → Security → Long-Lived Access Tokens
+export HA_URL="http://homeassistant.local:8123"
+export HA_TOKEN="your_long_lived_access_token"
+
+# Device web server auth (web_username / web_password in ../secrets.yaml)
+export WEB_USERNAME="your_web_username"
+export WEB_PASSWORD="your_web_password"

@@ -1,0 +1,19 @@
+- id: '1768374794488'
+  alias: Xmas Toggle
+  description: ''
+  triggers:
+  - device_id: 4a50b51d2acc9d42f40efe6a2de3f0d9
+    domain: bthome
+    type: button
+    subtype: press
+    trigger: device
+  conditions: []
+  actions:
+  - action: switch.toggle
+    metadata: {}
+    target:
+      device_id:
+      - e0b3476da3ddcf2a739831ef46ee1c5c
+      - 52d5e7f559935afe5623f7f01f5cbbb7
+    data: {}
+  mode: single

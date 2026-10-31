@@ -1,0 +1,45 @@
+substitutions:
+  name: dot-matrix
+  api_encryption_key: !secret api_encryption_key
+
+packages:
+  base: !include ../common/base.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "Dot Matrix"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+# ESP32 DevKit V1: single 4-in-1 MAX7219 board (32x8).
+# Wiring (silkscreen D<n> = GPIO<n>):
+#   CLK -> D18, DIN -> D23, CS -> D5, VCC -> VIN, GND -> GND
+font:
+  - file: "gfonts://Silkscreen"
+    id: font_pixel
+    size: 8
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+display:
+  - platform: max7219digit
+    id: matrix
+    cs_pin: GPIO5
+    num_chips: 4
+    # Keep low while powered from USB (0-15)
+    intensity: 2
+    scroll_enable: true
+    scroll_speed: 50ms
+    lambda: |-
+      it.print(0, 7, id(font_pixel), TextAlign::BASELINE_LEFT, "HELLO DOT MATRIX");

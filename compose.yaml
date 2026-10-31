@@ -1,0 +1,25 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    stop_grace_period: 60s
+    privileged: true
+    network_mode: host
+    environment:
+      TZ: America/New_York
+    labels:
+      diun.enable: true
+      diun.metadata.dockge_stack: homeassistant
+      glance.id: homeassistant
+      glance.name: Home Assistant
+      glance.icon: di:home-assistant
+      glance.url: https://home.priddle.network
+networks:
+  default:
+    external: true
+    name: proxy

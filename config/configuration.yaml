@@ -1,0 +1,56 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+lovelace:
+  resource_mode: yaml
+  resources:
+    - url: /hacsfiles/Bubble-Card/bubble-card.js
+      type: module
+    - url: /hacsfiles/clock-weather-card/clock-weather-card.js
+      type: module
+    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+      type: module
+    - url: /hacsfiles/calendar-card-pro/calendar-card-pro.js
+      type: module
+    # Bump ?v= when the file changes to bust the frontend cache.
+    - url: /local/emby-now-playing-card.js?v=1
+      type: module
+    - url: 'https://fonts.googleapis.com/css?family=Raleway'
+      type: css
+  dashboards:
+    lovelace-bubble:
+      mode: yaml
+      title: Bubble Card
+      icon: mdi:message-alert
+      show_in_sidebar: true
+      filename: dashboards/bubble_card.yaml
+
+homeassistant:
+  packages: !include_dir_named packages
+
+# Written by the UI editors. Hand-written config goes in packages/.
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+homekit:
+  - filter:
+      exclude_entity_globs:
+        - camera.*
+        - sensor.p2s_*
+        - binary_sensor.p2s_*
+        - sensor.forecast_*
+        - switch.dns*
+        - switch.*_filtering
+        - switch.*_safe_search
+        - switch.*_query_log
+        - switch.zigbee*
+        - button.zigbee*
+        - automation.*
+        - scene.*
+        - button.thermostat*
+        - light.*_all

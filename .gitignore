@@ -1,0 +1,30 @@
+# Environment/secrets
+.env
+.envrc
+*.env
+config/secrets.yaml
+
+# Home Assistant runtime
+config/.storage/
+config/.ha_run.lock
+config/.HA_VERSION
+config/home-assistant.log*
+config/home-assistant_v2.db*
+config/backups/
+config/tts/
+config/**/__pycache__/
+# HACS-managed; hand-written integrations are tracked
+config/custom_components/*
+!config/custom_components/emby_now_playing/
+config/www/community/
+config/www/media/ha-bambulab
+config/themes/
+config/.cache/
+
+# Misc
+*.pyc
+*.pyo
+*.zip
+/INTEGRATIONS.md
+/CLAUDE.local.md
+/.claude/settings.local.json

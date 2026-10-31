@@ -1,0 +1,67 @@
+substitutions:
+  name: uplift-desk
+  api_encryption_key: !secret uplift_desk__api_encryption_key
+
+packages:
+  base: !include ../common/base.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "Uplift Desk"
+  on_boot:
+    priority: -100
+    then:
+      - uart.write: [0xF1, 0xF1, 0x07, 0x00, 0x07, 0x7E]
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Pull in just the standing desk height component
+external_components:
+  - source: github://tjhorner/esphome-standing-desk
+    components: [ standing_desk_height ]
+
+# UART for receiving height data from desk
+uart:
+  id: desk_uart
+  rx_pin: GPIO16
+  tx_pin: GPIO17
+  baud_rate: 9600
+
+sensor:
+  - platform: standing_desk_height
+    id: desk_height
+    name: "Desk Height"
+    variant: uplift  # or try "auto"
+    unit_of_measurement: "in"
+
+output:
+  - platform: gpio
+    pin: GPIO19
+    id: hs0_up
+    inverted: true
+
+  - platform: gpio
+    pin: GPIO18
+    id: hs1_down
+    inverted: true
+
+button:
+  - platform: output
+    name: "Desk Up"
+    output: hs0_up
+    duration: 100ms
+
+  - platform: output
+    name: "Desk Down"
+    output: hs1_down
+    duration: 100ms
+
+# Enable logging
+logger:
+
+ota:
+  - platform: esphome
+    encryption:

@@ -1,0 +1,212 @@
+substitutions:
+  name: waveshare-c6-display
+  api_encryption_key: !secret api_encryption_key
+
+packages:
+  base: !include common/base.yaml
+  hardware: !include common/hardware/waveshare-c6-lcd.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "Waveshare C6 Display"
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+# --- Time ---
+time:
+  - platform: homeassistant
+    id: ha_time
+
+# --- Fonts ---
+font:
+  - file: "gfonts://JetBrains Mono@700"
+    id: font_value
+    size: 28
+    bpp: 4
+  - file: "gfonts://JetBrains Mono@700"
+    id: font_unit
+    size: 16
+    bpp: 4
+  - file: "gfonts://JetBrains Mono@700"
+    id: font_label
+    size: 14
+    bpp: 4
+  - file: "gfonts://JetBrains Mono"
+    id: font_header
+    size: 14
+    bpp: 4
+
+# --- LVGL ---
+# Landscape: 320w x 172h
+lvgl:
+  displays:
+    - main_display
+  rotation: 90
+
+  default_font: font_label
+
+  pages:
+    - id: main_page
+      bg_color: 0x0f172a
+      bg_opa: COVER
+      widgets:
+        # Header bar
+        - obj:
+            x: 4
+            y: 4
+            width: 312
+            height: 24
+            bg_color: 0x1e293b
+            border_width: 0
+            radius: 6
+            pad_left: 8
+            pad_right: 8
+            widgets:
+              - label:
+                  align: LEFT_MID
+                  text_font: font_header
+                  text_color: 0x94a3b8
+                  text: "SPEEDTEST"
+              - label:
+                  id: lbl_time
+                  align: RIGHT_MID
+                  text_font: font_header
+                  text_color: 0x94a3b8
+                  text: "--:--"
+
+        # Download card
+        - obj:
+            x: 4
+            y: 32
+            width: 101
+            height: 136
+            bg_color: 0x1e293b
+            border_width: 0
+            radius: 8
+            pad_all: 8
+            widgets:
+              - label:
+                  align: TOP_MID
+                  text_font: font_label
+                  text_color: 0x94a3b8
+                  text: "DOWNLOAD"
+              - label:
+                  id: lbl_download
+                  align: CENTER
+                  text_font: font_value
+                  text_color: 0x4ade80
+                  text: "--"
+              - label:
+                  align: BOTTOM_MID
+                  text_font: font_unit
+                  text_color: 0x64748b
+                  text: "Mbit/s"
+
+        # Upload card
+        - obj:
+            x: 109
+            y: 32
+            width: 101
+            height: 136
+            bg_color: 0x1e293b
+            border_width: 0
+            radius: 8
+            pad_all: 8
+            widgets:
+              - label:
+                  align: TOP_MID
+                  text_font: font_label
+                  text_color: 0x94a3b8
+                  text: "UPLOAD"
+              - label:
+                  id: lbl_upload
+                  align: CENTER
+                  text_font: font_value
+                  text_color: 0x38bdf8
+                  text: "--"
+              - label:
+                  align: BOTTOM_MID
+                  text_font: font_unit
+                  text_color: 0x64748b
+                  text: "Mbit/s"
+
+        # Ping card
+        - obj:
+            x: 214
+            y: 32
+            width: 102
+            height: 136
+            bg_color: 0x1e293b
+            border_width: 0
+            radius: 8
+            pad_all: 8
+            widgets:
+              - label:
+                  align: TOP_MID
+                  text_font: font_label
+                  text_color: 0x94a3b8
+                  text: "PING"
+              - label:
+                  id: lbl_ping
+                  align: CENTER
+                  text_font: font_value
+                  text_color: 0xfbbf24
+                  text: "--"
+              - label:
+                  align: BOTTOM_MID
+                  text_font: font_unit
+                  text_color: 0x64748b
+                  text: "ms"
+
+# --- Home Assistant Sensors ---
+sensor:
+  - platform: internal_temperature
+    name: "ESP32 CPU Temperature"
+    update_interval: 60s
+
+  - platform: homeassistant
+    id: ha_download
+    entity_id: sensor.speedtest_download
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_download
+            text:
+              format: "%.1f"
+              args: [x]
+
+  - platform: homeassistant
+    id: ha_upload
+    entity_id: sensor.speedtest_upload
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_upload
+            text:
+              format: "%.1f"
+              args: [x]
+
+  - platform: homeassistant
+    id: ha_ping
+    entity_id: sensor.speedtest_ping
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_ping
+            text:
+              format: "%.0f"
+              args: [x]
+
+# --- Clock update ---
+interval:
+  - interval: 1min
+    then:
+      - lvgl.label.update:
+          id: lbl_time
+          text:
+            format: "%02d:%02d"
+            args: ['id(ha_time).now().hour', 'id(ha_time).now().minute']

@@ -1,0 +1,136 @@
+substitutions:
+  name: cyd-weather
+  api_encryption_key: !secret cyd_weather_api_encryption_key
+
+packages:
+  base: !include ../common/base.yaml
+  hardware: !include ../common/hardware/cyd.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "CYD Weather"
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [cyd_ui]
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+font:
+  - file: "gfonts://JetBrains Mono"
+    id: jb_large
+    size: 28
+    bpp: 4
+    glyphs: " 0123456789:AMP"
+  - file: "gfonts://JetBrains Mono"
+    id: jb_medium
+    size: 16
+    bpp: 4
+  - file: "gfonts://JetBrains Mono"
+    id: jb_small
+    size: 14
+    bpp: 4
+  - file: "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
+    id: mdi_weather
+    size: 24
+    bpp: 4
+    glyphs:
+      - "\U000F0599"  # weather-sunny
+      - "\U000F0594"  # weather-night
+      - "\U000F0595"  # weather-partly-cloudy
+      - "\U000F0590"  # weather-cloudy
+      - "\U000F0597"  # weather-rainy
+      - "\U000F0596"  # weather-pouring
+      - "\U000F0598"  # weather-snowy
+      - "\U000F0591"  # weather-fog
+      - "\U000F0593"  # weather-lightning
+      - "\U000F067E"  # weather-lightning-rainy
+      - "\U000F059D"  # weather-windy
+      - "\U000F0592"  # weather-hail
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+lvgl:
+  displays:
+    - main_display
+  touchscreens:
+    - main_touchscreen
+
+cyd_ui:
+  id: my_ui
+  time_id: ha_time
+  font_large: jb_large
+  font_medium: jb_medium
+  font_small: jb_small
+  font_icon: mdi_weather
+
+sensor:
+  - platform: internal_temperature
+    name: "ESP32 CPU Temperature"
+    update_interval: 60s
+
+  - platform: homeassistant
+    id: ha_weather_temp
+    entity_id: weather.forecast_home
+    attribute: temperature
+    on_value:
+      then:
+        - lambda: 'id(my_ui).update_card("weather_temp", str_sprintf("%.0f\xC2\xB0", x));'
+
+  - platform: homeassistant
+    id: ha_weather_high
+    entity_id: sensor.forecast_0_temp_high
+    on_value:
+      then:
+        - lambda: 'id(my_ui).update_card("weather_high", str_sprintf("%.0f\xC2\xB0", x));'
+
+  - platform: homeassistant
+    id: ha_weather_low
+    entity_id: sensor.forecast_0_temp_low
+    on_value:
+      then:
+        - lambda: 'id(my_ui).update_card("weather_low", str_sprintf("%.0f\xC2\xB0", x));'
+
+text_sensor:
+  - platform: homeassistant
+    id: ha_weather_cond
+    entity_id: sensor.forecast_0_condition
+    on_value:
+      then:
+        - lambda: |-
+            const char *icon = "\U000F0595";
+            if (x == "sunny" || x == "clear")               icon = "\U000F0599";
+            else if (x == "clear-night")                    icon = "\U000F0594";
+            else if (x == "cloudy")                         icon = "\U000F0590";
+            else if (x == "rainy")                          icon = "\U000F0597";
+            else if (x == "pouring")                        icon = "\U000F0596";
+            else if (x == "snowy" || x == "snowy-rainy")    icon = "\U000F0598";
+            else if (x == "fog" || x == "hazy")             icon = "\U000F0591";
+            else if (x == "lightning")                      icon = "\U000F0593";
+            else if (x == "lightning-rainy")                icon = "\U000F067E";
+            else if (x == "windy" || x == "windy-variant")  icon = "\U000F059D";
+            else if (x == "hail")                           icon = "\U000F0592";
+            id(my_ui).update_card("weather_icon", icon);
+        - lambda: |-
+            std::string cond = "Unknown";
+            if (x == "sunny" || x == "clear")               cond = "Sunny";
+            else if (x == "clear-night")                    cond = "Clear";
+            else if (x == "partlycloudy")                   cond = "Partly Cloudy";
+            else if (x == "cloudy")                         cond = "Cloudy";
+            else if (x == "rainy")                          cond = "Rain";
+            else if (x == "pouring")                        cond = "Heavy Rain";
+            else if (x == "snowy" || x == "snowy-rainy")    cond = "Snow";
+            else if (x == "fog" || x == "hazy")             cond = "Fog";
+            else if (x == "lightning")                      cond = "Thunder";
+            else if (x == "lightning-rainy")                cond = "Thunderstorm";
+            else if (x == "windy" || x == "windy-variant")  cond = "Windy";
+            else if (x == "hail")                           cond = "Hail";
+            id(my_ui).update_card("weather_cond", cond);

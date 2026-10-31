@@ -1,0 +1,6 @@
+# Real secrets live here; device folders only hold a stub that includes it
+/secrets.yaml
+.esphome/
+__pycache__/
+.DS_Store
+.claude/settings.local.json
