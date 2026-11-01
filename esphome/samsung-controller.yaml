@@ -1,0 +1,135 @@
+substitutions:
+  name: samsung-controller
+  friendly_name: "Samsung Controller"
+  timezone: America/New_York
+  api_encryption_key: !secret samsung_controller__api_encryption_key
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+ota:
+  - platform: esphome
+    encryption:
+
+remote_transmitter:
+  pin:
+    number: GPIO5
+    mode:
+      output: true
+  carrier_duty_percent: 50%
+
+button:
+  # Power
+  - platform: template
+    name: "Power"
+    id: samsung_power
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E040BF
+
+  # Navigation
+  - platform: template
+    name: "Up"
+    id: samsung_up
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E006F9
+
+  - platform: template
+    name: "Down"
+    id: samsung_down
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E08679
+
+  - platform: template
+    name: "Left"
+    id: samsung_left
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0A659
+
+  - platform: template
+    name: "Right"
+    id: samsung_right
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E046B9
+
+  - platform: template
+    name: "OK"
+    id: samsung_ok
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E016E9
+
+  - platform: template
+    name: "Back"
+    id: samsung_back
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E01AE5
+
+  - platform: template
+    name: "Home"
+    id: samsung_home
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E09E61
+
+  # Media
+  - platform: template
+    name: "Play/Pause"
+    id: samsung_play_pause
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0E21D
+
+  # Volume
+  - platform: template
+    name: "Volume Up"
+    id: samsung_vol_up
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0E01F
+
+  - platform: template
+    name: "Volume Down"
+    id: samsung_vol_down
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0D02F
+
+  - platform: template
+    name: "Mute"
+    id: samsung_mute
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0F00F
+
+  # Channel
+  - platform: template
+    name: "Channel Up"
+    id: samsung_ch_up
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E048B7
+
+  - platform: template
+    name: "Channel Down"
+    id: samsung_ch_down
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E008F7
+
+  # Source
+  - platform: template
+    name: "Source"
+    id: samsung_source
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0807F
