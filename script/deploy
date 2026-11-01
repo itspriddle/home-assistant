@@ -39,6 +39,12 @@ set -e
 cd "$1"
 restart_mode="$2"
 
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" != "main" ]; then
+    echo "Error: ${PWD} is on branch '${branch}', not 'main'. Check out main on the server first." >&2
+    exit 1
+fi
+
 echo "Pulling latest changes..."
 before_hash=$(git rev-parse HEAD)
 git pull --ff-only
