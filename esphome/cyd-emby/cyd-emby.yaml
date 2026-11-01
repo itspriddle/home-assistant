@@ -67,7 +67,7 @@ lvgl:
     - main_display
   touchscreens:
     - main_touchscreen
-  rotation: 90
+  rotation: 270
 
 emby_ui:
   id: emby
