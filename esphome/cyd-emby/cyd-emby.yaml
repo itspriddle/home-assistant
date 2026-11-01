@@ -81,16 +81,30 @@ script:
   - id: fetch_sessions
     mode: restart
     then:
+      - script.execute: fetch_timeout
       - homeassistant.action:
           action: script.emby_now_playing_sessions
           capture_response: true
           on_success:
+            - script.stop: fetch_timeout
             - lambda: 'id(emby).set_sessions(response["response"]["sessions"]);'
           on_error:
+            - script.stop: fetch_timeout
             - logger.log:
                 format: "Fetching sessions failed: %s"
                 args: [error.c_str()]
             - lambda: 'id(emby).show_message("Can''t reach Home Assistant");'
+
+  # HA sends no response at all when it rejects the call (device not allowed
+  # to perform actions), so on_error never fires.
+  - id: fetch_timeout
+    mode: restart
+    then:
+      - delay: 10s
+      - logger.log:
+          level: WARN
+          format: "No response from script.emby_now_playing_sessions; is \"Allow the device to perform Home Assistant actions\" enabled?"
+      - lambda: 'id(emby).show_message("No response from Home Assistant");'
 
 sensor:
   - platform: internal_temperature
