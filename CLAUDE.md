@@ -36,7 +36,7 @@ docker exec homeassistant hass --script check_config
 ### Home Assistant (`config/`, mounted to `/config`)
 
 - `configuration.yaml` - Global config only: Lovelace resources/dashboards, HomeKit filter, package include
-- `packages/` - Hand-written config, one file per feature (holiday, meeting, thermostat, vision, weather). Each file can mix domains (`template:`, `sensor:`, `automation:`, ...). New YAML config goes here.
+- `packages/` - Hand-written config, one file per feature (emby, holiday, meeting, thermostat, vision, weather). Each file can mix domains (`template:`, `sensor:`, `automation:`, ...). New YAML config goes here.
 - `automations.yaml`, `scripts.yaml`, `scenes.yaml` - Owned by the HA UI editors; don't hand-edit
 - `dashboards/bubble_card.yaml` - Main dashboard (YAML mode, Bubble Card); `bubble_card/` holds Bubble Card modules
 - `custom_components/emby_now_playing/` - Hand-written Emby integration (read-only media players per client + `sensor.emby_now_playing`); other `custom_components/` are HACS-managed and gitignored
@@ -47,7 +47,7 @@ docker exec homeassistant hass --script check_config
 
 - `common/` - Shared packages: `base.yaml` (wifi, API, web server), `kauf-plug.yaml`, `hardware/` (board definitions)
 - Single-file devices at the top level: `kauf-plug-*.yaml`, `speedtest-gauge.yaml`, `treemote.yaml`
-- Larger projects in their own directories: `tab5-dashboard/`, `cyd-weather/`, `dot-matrix/`, `uplift-desk/` (some have their own README/CLAUDE.md and custom components)
+- Larger projects in their own directories: `tab5-dashboard/`, `cyd-weather/`, `cyd-emby/`, `dot-matrix/`, `uplift-desk/` (some have their own README/CLAUDE.md and custom components)
 - `tab5-dashboard/` - M5Stack Tab5 desk dashboard; reads `sensor.forecast_*`, `sensor.vision_next_event`, `light.*_all` and others, backed by `config/packages/vision.yaml`. Check it before renaming or removing entities.
 
 ### Secrets

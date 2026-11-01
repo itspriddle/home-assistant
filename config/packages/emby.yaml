@@ -1,0 +1,37 @@
+# Emby now-playing data for ESPHome displays (esphome/cyd-emby).
+#
+# ESPHome receives entity attributes as Python repr strings, so the device
+# calls this script instead and gets the sessions back as a JSON action
+# response. Only the fields the display uses are returned.
+
+script:
+  emby_now_playing_sessions:
+    alias: Emby now playing sessions
+    description: Trimmed sensor.emby_now_playing sessions for the cyd-emby display.
+    mode: parallel
+    sequence:
+      - variables:
+          result: >-
+            {% set ns = namespace(items=[]) %}
+            {% for s in state_attr('sensor.emby_now_playing', 'sessions') or [] %}
+              {% set ns.items = ns.items + [{
+                'state': s.state,
+                'type': s.type,
+                'title': s.title,
+                'series': s.series,
+                'season': s.season,
+                'episode': s.episode,
+                'artist': s.artist,
+                'album': s.album,
+                'year': s.year,
+                'device': s.device,
+                'client': s.client,
+                'user': s.user,
+                'duration': s.duration,
+                'position': s.position,
+                'updated': as_timestamp(s.position_updated_at, 0) | int,
+              }] %}
+            {% endfor %}
+            {{ {'sessions': ns.items} }}
+      - stop: Done
+        response_variable: result

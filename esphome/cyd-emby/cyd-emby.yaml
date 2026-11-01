@@ -1,0 +1,110 @@
+# Emby now-playing display on a CYD (ESP32-2432S028R), landscape.
+#
+# Sessions come from the emby_now_playing_sessions script
+# (config/packages/emby.yaml) as a JSON action response. Requires "Allow the
+# device to perform Home Assistant actions" in the ESPHome integration options.
+
+substitutions:
+  name: cyd-emby
+  api_encryption_key: !secret cyd_emby_api_encryption_key
+
+packages:
+  base: !include ../common/base.yaml
+  hardware: !include ../common/hardware/cyd.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "CYD Emby"
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [emby_ui]
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+font:
+  - file: "gfonts://Inter@600"
+    id: inter_title
+    size: 18
+    bpp: 4
+    glyphsets: [GF_Latin_Core]
+  - file: "gfonts://Inter"
+    id: inter_body
+    size: 14
+    bpp: 4
+    glyphsets: [GF_Latin_Core]
+  - file: "gfonts://Inter"
+    id: inter_small
+    size: 12
+    bpp: 4
+    glyphs: " 0123456789:/-.,'&()!?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz·"
+  - file: "https://github.com/Templarian/MaterialDesign-Webfont/raw/master/fonts/materialdesignicons-webfont.ttf"
+    id: mdi_18
+    size: 18
+    bpp: 4
+    glyphs:
+      - "\U000F0D19"  # play-box-multiple
+      - "\U000F0FCE"  # movie-open
+      - "\U000F07F4"  # television-classic
+      - "\U000F075A"  # music
+      - "\U000F0230"  # filmstrip
+      - "\U000F040A"  # play
+      - "\U000F03E4"  # pause
+      - "\U000F04B2"  # sleep
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+lvgl:
+  displays:
+    - main_display
+  touchscreens:
+    - main_touchscreen
+  rotation: 90
+
+emby_ui:
+  id: emby
+  time_id: ha_time
+  font_title: inter_title
+  font_body: inter_body
+  font_small: inter_small
+  font_icon: mdi_18
+
+script:
+  - id: fetch_sessions
+    mode: restart
+    then:
+      - homeassistant.action:
+          action: script.emby_now_playing_sessions
+          capture_response: true
+          on_success:
+            - lambda: 'id(emby).set_sessions(response["response"]["sessions"]);'
+          on_error:
+            - logger.log:
+                format: "Fetching sessions failed: %s"
+                args: [error.c_str()]
+            - lambda: 'id(emby).show_message("Can''t reach Home Assistant");'
+
+sensor:
+  - platform: internal_temperature
+    name: "ESP32 CPU Temperature"
+    update_interval: 60s
+
+text_sensor:
+  # Only used as a change signal: HA sends the attribute as a Python repr, so
+  # the actual data is fetched through fetch_sessions.
+  - platform: homeassistant
+    id: ha_emby_sessions
+    entity_id: sensor.emby_now_playing
+    attribute: sessions
+    internal: true
+    on_value:
+      then:
+        - script.execute: fetch_sessions
