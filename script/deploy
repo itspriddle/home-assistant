@@ -53,18 +53,24 @@ after_hash=$(git rev-parse HEAD)
 
 if [ "$before_hash" = "$after_hash" ]; then
     echo "Already up to date."
-    exit 0
+    if [ "$restart_mode" != "always" ]; then
+        exit 0
+    fi
+    compose_changed=0
+else
+    echo "Updated: ${before_hash:0:7} -> ${after_hash:0:7}"
+    git log --oneline "${before_hash}..${after_hash}"
+    compose_changed=$(git diff --name-only "$before_hash" "$after_hash" | grep -c '^compose\.yaml$' || true)
 fi
 
-echo "Updated: ${before_hash:0:7} -> ${after_hash:0:7}"
-git log --oneline "${before_hash}..${after_hash}"
-
-compose_changed=$(git diff --name-only "$before_hash" "$after_hash" | grep -c '^compose\.yaml$' || true)
-
-if [ "$restart_mode" = "always" ] || [ "$compose_changed" -gt 0 ]; then
+if [ "$compose_changed" -gt 0 ]; then
+    echo ""
+    echo "Recreating containers..."
+    docker compose up -d
+elif [ "$restart_mode" = "always" ]; then
     echo ""
     echo "Restarting containers..."
-    docker compose up -d
+    docker compose restart
 else
     echo ""
     echo "Config files changed. Restart containers manually or use -r flag."
