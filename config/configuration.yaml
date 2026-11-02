@@ -4,6 +4,8 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /local/community/custom-brand-icons/custom-brand-icons.js
 
 lovelace:
   resource_mode: yaml
@@ -16,11 +18,15 @@ lovelace:
       type: module
     - url: /hacsfiles/calendar-card-pro/calendar-card-pro.js
       type: module
+    - url: /hacsfiles/bambu-dashboard-card/bambu-dashboard-card.js
+      type: module
     # Bump ?v= when the file changes to bust the frontend cache.
     - url: /local/emby-now-playing-card.js?v=1
       type: module
     - url: 'https://fonts.googleapis.com/css?family=Raleway'
       type: css
+    - type: js
+      url: /local/community/custom-brand-icons/custom-brand-icons.js
   dashboards:
     lovelace-bubble:
       mode: yaml
@@ -28,6 +34,12 @@ lovelace:
       icon: mdi:message-alert
       show_in_sidebar: true
       filename: dashboards/bubble_card.yaml
+    bambu-dashboard:
+      mode: yaml
+      title: Bambu P2S
+      icon: phu:bambu-lab-alt
+      show_in_sidebar: true
+      filename: dashboards/bambu-dashboard.yaml
 
 homeassistant:
   packages: !include_dir_named packages
