@@ -1,0 +1,543 @@
+views:
+  - title: Network
+    path: network
+    icon: mdi:lan
+    type: sections
+    max_columns: 3
+    sections:
+    - type: grid
+      cards:
+      - type: heading
+        heading: Internet
+        icon: mdi:web
+      - type: tile
+        entity: sensor.speedtest_tracker_download
+        name: Down
+        grid_options:
+          columns: 4
+      - type: tile
+        entity: sensor.speedtest_tracker_upload
+        name: Up
+        grid_options:
+          columns: 4
+      - type: tile
+        entity: sensor.speedtest_tracker_ping
+        name: Ping
+        grid_options:
+          columns: 4
+      - type: tile
+        entity: sensor.speedtest_tracker_last_test_time
+        name: Last test
+        icon: mdi:clock-check-outline
+        grid_options:
+          columns: 12
+      - type: statistics-graph
+        title: Speed (daily, 30 days)
+        entities:
+        - entity: sensor.speedtest_tracker_download
+          name: Down
+        - entity: sensor.speedtest_tracker_upload
+          name: Up
+        period: day
+        days_to_show: 30
+        stat_types:
+        - mean
+        - min
+        chart_type: line
+      - type: statistics-graph
+        title: Ping (daily, 30 days)
+        entities:
+        - entity: sensor.speedtest_tracker_ping
+          name: Ping
+        period: day
+        days_to_show: 30
+        stat_types:
+        - mean
+        - max
+        chart_type: line
+    - type: grid
+      cards:
+      - type: heading
+        heading: Network
+        icon: mdi:router-network
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.cloud_gateway_fiber_state
+        name: Gateway
+        icon: mdi:router-network
+        sub_button:
+          main:
+            - entity: sensor.cloud_gateway_fiber_cpu_utilization
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.cloud_gateway_fiber_memory_utilization
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.u7_pro_xg_state
+        name: Access point
+        icon: mdi:access-point
+        sub_button:
+          main:
+            - entity: sensor.u7_pro_xg_cpu_utilization
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.u7_pro_xg_memory_utilization
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.usw_flex_2_5g_5_state
+        name: Switch
+        icon: mdi:switch
+        sub_button:
+          main:
+            - entity: sensor.usw_flex_2_5g_5_cpu_utilization
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.usw_flex_2_5g_5_memory_utilization
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.usw_flex_2_5g_8_poe_state
+        name: PoE switch
+        icon: mdi:switch
+        sub_button:
+          main:
+            - entity: sensor.usw_flex_2_5g_8_poe_cpu_utilization
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.usw_flex_2_5g_8_poe_memory_utilization
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: sub-buttons
+        sub_button:
+          main: []
+          bottom:
+            - entity: sensor.planet_express_clients
+              icon: mdi:wifi
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Planet Express
+              show_name: true
+            - entity: sensor.planet_express_2_4_clients
+              icon: mdi:wifi-strength-2
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Planet Express 2.4
+              show_name: true
+      - type: entity-filter
+        card:
+          type: entities
+          title: Updates
+        state_filter:
+        - "on"
+        show_empty: false
+        entities:
+        - update.cloud_gateway_fiber_firmware
+        - update.u7_pro_xg_firmware
+        - update.usw_flex_2_5g_5_firmware
+        - update.usw_flex_2_5g_8_poe_firmware
+        - update.usp_pdu_pro_firmware
+        - update.scarif_dsm_update
+    - type: grid
+      cards:
+      - type: heading
+        heading: Servers
+        icon: mdi:server-network
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.corellia_status
+        name: corellia
+        icon: mdi:server
+        styles: |
+          .bubble-icon {
+            color: ${state === 'on' ? 'var(--state-green-color, var(--success-color))' : 'var(--state-red-color, var(--error-color))'} !important;
+          }
+        sub_button:
+          main:
+            - entity: sensor.corellia_cpu
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.corellia_ram
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.corellia_disk
+              icon: mdi:harddisk
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.corellia_temperature
+              icon: mdi:thermometer
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.scarif_status
+        name: scarif
+        icon: mdi:server
+        styles: |
+          .bubble-icon {
+            color: ${state === 'on' ? 'var(--state-green-color, var(--success-color))' : 'var(--state-red-color, var(--error-color))'} !important;
+          }
+        sub_button:
+          main:
+            - entity: sensor.scarif_cpu
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.scarif_ram
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.scarif_disk
+              icon: mdi:harddisk
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.scarif_temperature
+              icon: mdi:thermometer
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.dns1_status
+        name: dns1
+        icon: mdi:server
+        styles: |
+          .bubble-icon {
+            color: ${state === 'on' ? 'var(--state-green-color, var(--success-color))' : 'var(--state-red-color, var(--error-color))'} !important;
+          }
+        sub_button:
+          main:
+            - entity: sensor.dns1_cpu
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns1_ram
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns1_disk
+              icon: mdi:harddisk
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns1_temperature
+              icon: mdi:thermometer
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.dns2_status
+        name: dns2
+        icon: mdi:server
+        styles: |
+          .bubble-icon {
+            color: ${state === 'on' ? 'var(--state-green-color, var(--success-color))' : 'var(--state-red-color, var(--error-color))'} !important;
+          }
+        sub_button:
+          main:
+            - entity: sensor.dns2_cpu
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns2_ram
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns2_disk
+              icon: mdi:harddisk
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns2_temperature
+              icon: mdi:thermometer
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.endor_status
+        name: endor
+        icon: mdi:server
+        styles: |
+          .bubble-icon {
+            color: ${state === 'on' ? 'var(--state-green-color, var(--success-color))' : 'var(--state-red-color, var(--error-color))'} !important;
+          }
+        sub_button:
+          main:
+            - entity: sensor.endor_cpu
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.endor_ram
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.endor_disk
+              icon: mdi:harddisk
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.endor_temperature
+              icon: mdi:thermometer
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.mandalore_status
+        name: mandalore
+        icon: mdi:server
+        styles: |
+          .bubble-icon {
+            color: ${state === 'on' ? 'var(--state-green-color, var(--success-color))' : 'var(--state-red-color, var(--error-color))'} !important;
+          }
+        sub_button:
+          main:
+            - entity: sensor.mandalore_cpu
+              icon: mdi:cpu-64-bit
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.mandalore_ram
+              icon: mdi:memory
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.mandalore_disk
+              icon: mdi:harddisk
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.mandalore_temperature
+              icon: mdi:thermometer
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+    - type: grid
+      cards:
+      - type: heading
+        heading: DNS
+        icon: mdi:dns
+      - type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: switch.dns1_protection
+        name: dns1
+        icon: mdi:shield-check
+        sub_button:
+          main:
+            - entity: sensor.dns1_dns_queries
+              icon: mdi:dns
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns1_dns_queries_blocked_ratio
+              icon: mdi:shield-off
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns1_average_processing_speed
+              icon: mdi:timer-outline
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: switch.dns2_protection
+        name: dns2
+        icon: mdi:shield-check
+        sub_button:
+          main:
+            - entity: sensor.dns2_dns_queries
+              icon: mdi:dns
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns2_dns_queries_blocked_ratio
+              icon: mdi:shield-off
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.dns2_average_processing_speed
+              icon: mdi:timer-outline
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+    - type: grid
+      cards:
+      - type: heading
+        heading: Power
+        icon: mdi:flash
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.ups_status
+        name: UPS
+        icon: mdi:battery-charging-high
+        sub_button:
+          main:
+            - entity: sensor.ups_battery_charge
+              icon: mdi:battery
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.ups_battery_runtime
+              icon: mdi:timer-sand
+              show_icon: true
+              show_state: true
+              show_background: false
+            - entity: sensor.ups_load
+              icon: mdi:gauge
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.usp_pdu_pro_ac_power_consumption
+        name: PDU
+        icon: mdi:power-plug-outline
+        show_state: true
+        sub_button:
+          main:
+            - entity: sensor.usp_pdu_pro_ac_power_budget
+              icon: mdi:gauge-full
+              name: Budget
+              show_icon: true
+              show_state: true
+              show_background: false
+          bottom: []
+      - type: custom:bubble-card
+        card_type: sub-buttons
+        sub_button:
+          main: []
+          bottom:
+            - entity: sensor.usp_pdu_pro_cloud_gateway_outlet_7_outlet_power
+              icon: mdi:router-network
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Gateway
+              show_name: true
+            - entity: sensor.usp_pdu_pro_usw_flex_2_5g_8_poe_outlet_5_outlet_power
+              icon: mdi:switch
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: PoE switch
+              show_name: true
+            - entity: sensor.usp_pdu_pro_ups_outlet_16_outlet_power
+              icon: mdi:battery-charging
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: UPS
+              show_name: true
+            - entity: sensor.usp_pdu_pro_beelink_n100_outlet_19_outlet_power
+              icon: mdi:desktop-tower
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Beelink
+              show_name: true
+            - entity: sensor.usp_pdu_pro_dns2_outlet_20_outlet_power
+              icon: mdi:dns
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: dns2
+              show_name: true
+            - entity: sensor.usp_pdu_pro_hue_bridge_outlet_17_outlet_power
+              icon: mdi:hub
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Hue bridge
+              show_name: true
+            - entity: sensor.usp_pdu_pro_lights_outlet_18_outlet_power
+              icon: mdi:lightbulb
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Lights
+              show_name: true
+            - entity: sensor.usp_pdu_pro_outlet_13_outlet_power
+              icon: mdi:power-socket-us
+              show_icon: true
+              show_state: true
+              show_background: false
+              name: Outlet 13
+              show_name: true
+      - type: statistics-graph
+        title: Rack power (7 days)
+        entities:
+        - entity: sensor.usp_pdu_pro_ac_power_consumption
+          name: PDU
+        period: hour
+        days_to_show: 7
+        stat_types:
+        - mean
+        chart_type: line
