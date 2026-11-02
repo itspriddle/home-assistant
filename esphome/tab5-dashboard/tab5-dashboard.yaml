@@ -10,6 +10,7 @@ esphome:
   min_version: 2026.2.0
 
 packages:
+  base: !include ../common/base.yaml
   device: !include packages/device.yaml
   network: !include packages/network.yaml
   audio: !include packages/audio.yaml

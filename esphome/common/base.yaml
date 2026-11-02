@@ -6,6 +6,10 @@ wifi:
     ssid: "${name} Fallback"
     password: !secret fallback_ap_password
 
+ota:
+  - platform: esphome
+    encryption:
+
 api:
   encryption:
     key: ${api_encryption_key}
