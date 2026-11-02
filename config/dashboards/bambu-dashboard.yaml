@@ -1,0 +1,8 @@
+views:
+  - title: Print workspace
+    path: workspace
+    type: panel
+    cards:
+      - type: custom:bambu-dashboard-card
+        discovery: auto
+        language: auto
