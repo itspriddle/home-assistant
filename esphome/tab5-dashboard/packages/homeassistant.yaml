@@ -205,7 +205,7 @@ sensor:
   # ---- 3D printer ----
   - platform: homeassistant
     id: ha_printer_progress
-    entity_id: sensor.p2s_22e8aj5c1700577_print_progress
+    entity_id: sensor.office_p2s_print_progress
     internal: true
     on_value:
       - lambda: 'id(dash).set_printer_progress(x);'
@@ -374,7 +374,7 @@ text_sensor:
           id(dash).set_next_event(x == "unavailable" || x == "unknown" || x == "none" ? std::string() : x);
   - platform: homeassistant
     id: ha_printer_status
-    entity_id: sensor.p2s_22e8aj5c1700577_print_status
+    entity_id: sensor.office_p2s_print_status
     internal: true
     on_value:
       - lambda: |-
