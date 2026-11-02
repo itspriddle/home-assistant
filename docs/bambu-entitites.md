@@ -1,0 +1,193 @@
+# HA Bambu Entities
+
+## Fans
+
+| Sensor        | Notes             |
+| ------------- | ----------------- |
+| Aux           |                   |
+| Chamber       | Not on A1/A1 Mini |
+| Cooling       |                   |
+| Secondary aux | P2S, X2D          |
+
+## Temperatures
+
+| Sensor           | Notes   |
+| ---------------- | ------- |
+| Bed              |         |
+| Target Bed       |         |
+| Chamber          | P2/X1/H2 only |
+| Target Chamber   | X1E/H2 only |
+| Nozzle(s)        | Three on H2D (left, right, and active nozzle) |
+| Target Nozzle(s) | Three on H2D (left, right, and active nozzle) |
+
+## Print Data and Progress
+
+| Sensor            | Notes                                              |
+| ----------------- | -------------------------------------------------- |
+| Current Layer     |                                                    |
+| Total Layer Count |                                                    |
+| Print Progress    |                                                    |
+| Print Weight      | With Bambu credentials or when loaded from printer |
+| Print Length      | With Bambu credentials or when loaded from printer |
+| Print Bed Type    | Bed choice in the print job                        |
+| Start Time        | Simulated - more accurate with Bambu credentials   |
+| Remaining Time    |                                                    |
+| End Time          |                                                    |
+| Current Stage     |                                                    |
+| Print Status      |                                                    |
+| Cover Image       | With Bambu credentials or when loaded from printer |
+| Total Usage Hours | \* See Note                                        |
+
+<Info>
+\* This is a running estimate that will be imprecise. Starting hours can be read of the printer screen and provided during initial printer setup or updated later via the configuration flow. And the integration must be running when a print completes to update the value. For non-X1 printers, if the integration is restarted mid-print and Bambu cloud connection isn't setup, the usage hours will not be added as print start time won't be known. It's expected that you'll need to adjust this value occasionally to fix drift from the value the printer itself calculates.
+</Info>
+
+## Miscellaneous
+
+| Sensor                   | Notes |
+| ------------------------ | ----- |
+| Nozzle Diameter(s)       | Three on H2D (left, right, and active nozzle) |
+| Nozzle Type(s)           | Three on H2D (left, right, and active nozzle) |
+| Speed Profile            |       |
+| Timelapse Active         |       |
+| Extruder Filament Status |       |
+| Airduct Mode             | Current airduct mode: Cooling, Heating, or Laser. P2S/H2 only |
+| Tool Module State        | Current mounted tool (H2D exclusive): none, laser, cutter or unavailable |
+
+
+## Controls
+
+| Control             | Notes                                                      |
+| ------------------- | ---------------------------------------------------------- |
+| Chamber Light       |                                                            |
+| Heatbed Light       | H2D only, initial state not known                          |
+| Pause               |                                                            |
+| Resume              |                                                            |
+| Stop                |                                                            |
+| Bed temperature     | On P1/A1 this is not available in hybrid connection mode\* |
+| Chamber temperature | X1E/H2 only. Max 60°C on X1E, 65°C on H2 series          |
+| Nozzle temperature  | On P1/A1 this is not available in hybrid connection mode\* |
+| Buzzer controls     | H2D only, allows to set one of 3 modes                     |
+| Airduct Mode        | Switch between Cooling and Heating modes. P2S/H2 only        |
+| Allow Prompt Sound  | A1 and H2D only, enables startup, print start and end sounds |
+
+<Info>\* Hybrid connection mode is when you are connected to the local printer mqtt for a non-Lan Mode printer.</Info>
+<Warning>If you are running the latest X1 firmware with Bambu Authorisation, the only functional control is the Chamber Light</Warning>
+
+
+## AMS
+
+| Sensor            | Notes          |
+| ----------------- | -------------- |
+| Active tray       | If AMS present |
+| Active tray index | If AMS present |
+| Drying            | AMS 2 Pro/AMS HT only |
+
+
+| Sensor                | Notes                 |
+| --------------------- | --------------------- |
+| Humidity Index        |                       |
+| Humidity              | P1/P2/X1/H2 only      |
+| Temperature           | P1/P2/X1/H2 only      |
+| Remaining drying time | AMS 2 Pro/AMS HT only |
+| Drying temperature    | AMS 2 Pro/AMS HT only |
+| Drying duration       | AMS 2 Pro/AMS HT only |
+| Drying filament       | AMS 2 Pro/AMS HT only |
+| Tray 1                |                       |
+| Tray 2                |                       |
+| Tray 3                |                       |
+| Tray 4                |                       |
+
+| Tray attributes:    | Notes      |
+| ------------------- | ---------- |
+| Color               |            |
+| Empty               | `true` when no spool is in the slot, or the tray is loading / scanning (RFID motion). See note below. |
+| Unknown             | `true` when a spool is loaded but `tray_type` is not set — sensor state shows `?`, matching the printer UI. |
+| State               | Raw MQTT tray `state` integer (bitmask). Diagnostic; used internally. |
+| K Value             | P1/A1 only |
+| Name                | Filament display name, `Empty`, or `?` |
+| Nozzle max temp     |            |
+| Nozzle min temp     |            |
+| Remaining Filament  |            |
+| Spool serial number |            |
+| Type                | Filament type (e.g. `PLA`), `Empty`, or `?` |
+
+<Info>
+**Empty vs unknown:** These are different from the sensor **state** string.
+
+- **`empty: true`** — no usable spool (slot empty, feeding, or RFID scan in progress).
+- **`empty: false`, `unknown: true`** — spool is present but not configured (`?` on the printer). Typical after inserting an unprofiled spool or using **Clear** in filament settings while the spool stays loaded.
+- **`empty: false`, `unknown: false`** — spool present with a correct profile.
+</Info>
+
+## External Spool
+
+| Sensor         | Notes |
+| -------------- | ----- |
+| External Spool |       |
+
+| Attributes:     | Notes      |
+| --------------- | ---------- |
+| Color           |            |
+| Empty           |            |
+| Unknown         |            |
+| State           |            |
+| K Value         | P1/A1 only |
+| Name            |            |
+| Nozzle max temp |            |
+| Nozzle min temp |            |
+| Type            |            |
+
+## Hotend Rack
+
+H2C only (Vortek system).
+
+| Sensor                 | Notes                                      |
+| ---------------------- | ------------------------------------------ |
+| Hotend 1-6             | Mounted, Docked, or Empty                  |
+| Hotend 1-6 used time   | Total nozzle printing time, shown in hours |
+
+| Hotend attributes: | Notes                            |
+| ------------------ | -------------------------------- |
+| Slot               | Slot number (1-6)                |
+| Nozzle type        | e.g. Hardened steel, High flow stainless steel |
+| Nozzle diameter    |                                  |
+| Serial             |                                  |
+| Max temperature    |                                  |
+| Wear               |                                  |
+| Status             | Normal, Abnormal, or Unknown     |
+| Color              |                                  |
+| Filament ID        |                                  |
+| Filament name      |                                  |
+
+When a slot is empty, all attributes are set to `None`.
+
+| Diagnostic sensor  | Notes                                                                    |
+| ------------------ | ------------------------------------------------------------------------ |
+| Holder position    | Unknown, Position A, Position B, Centre                                  |
+| Holder state       | Idle, Centering hotend, Centering toolhead, Calibrating rack, Cutting material, Unlocking hotend, Lifting rack, Placing hotend, Picking hotend, Locking hotend |
+
+## Diagnostics
+
+| Sensor                    | Notes                                                          |
+| ------------------------- | -------------------------------------------------------------- |
+| Developer Lan Mode        | Does the printer have Developer Lan Mode enabled?              |
+| Enclosure Door            | X1/P2/H2 only                                                        |
+| Firmware Update Available |                                                                |
+| Force Refresh             |                                                                |
+| HMS Errors                | Attributes contain the error codes, descriptions and wiki URLs |
+| IP Address                |                                                                |
+| MQTT connection mode      | Bambu Cloud or Local                                           |
+| MQTT Encryption Firmware  | Is the printer running firmware that requires mqtt encryption? |
+| Online                    |                                                                |
+| Print Error               | Has a print error been reported?                               |
+| SD Card Status            | Reported state of the SD card                                  |
+| Total Usage               | Running count of total usage hours                             |
+| Wifi Signal               |                                                                |
+
+## Cameras
+
+| Sensor  | Notes                                                           |
+| ------- | --------------------------------------------------------------- |
+| Chamber | P1/A1/A1Mini - need the host IP providing                       |
+|         | X1    - Make sure to enable "LAN Mode LiveView" on your printer |
