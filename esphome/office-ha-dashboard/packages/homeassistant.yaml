@@ -8,7 +8,7 @@
 #     "unavailable" turns them off instead of keeping the last state
 #
 # HA must allow this device to perform actions (ESPHome integration ->
-# Vision -> Configure -> "Allow the device to perform Home Assistant actions").
+# HA Dashboard Desk -> Configure -> "Allow the device to perform Home Assistant actions").
 
 # ============================================================
 # HA -> dashboard: numeric values
@@ -370,10 +370,10 @@ text_sensor:
     internal: true
     on_value:
       - lambda: 'id(dash).set_meeting(x == "on");'
-  # From config/packages/vision.yaml; "none" means nothing coming up
+  # From config/packages/office_ha_dashboard.yaml; "none" means nothing coming up
   - platform: homeassistant
     id: ha_next_event
-    entity_id: sensor.vision_next_event
+    entity_id: sensor.office_ha_dashboard_next_event
     internal: true
     on_value:
       - lambda: |-

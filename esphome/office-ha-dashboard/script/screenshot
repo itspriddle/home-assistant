@@ -11,7 +11,7 @@ temp_file=$(mktemp)
 trap 'rm -f "$temp_file"' EXIT
 
 # Credentials go through stdin so they don't show up in the process list
-curl -sf -m 60 --digest --config - "http://vision.local/screenshot" -o "$temp_file" \
+curl -sf -m 60 --digest --config - "http://ha-dashboard-desk.local/screenshot" -o "$temp_file" \
   <<<"user = \"${ESPHOME_WEB_USERNAME}:${ESPHOME_WEB_PASSWORD}\""
 sips -s format png "$temp_file" --out "$output" >/dev/null
 

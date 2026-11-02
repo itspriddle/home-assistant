@@ -14,8 +14,8 @@ built in C++ by the local `dashboard` component.
 ## Project Structure
 
 ```
-tab5-dashboard/
-├── tab5-dashboard.yaml      # Entry point: packages, lvgl, dashboard, fonts
+ha-dashboard-desk/
+├── ha-dashboard-desk.yaml   # Entry point: packages, lvgl, dashboard, fonts
 ├── packages/
 │   ├── device.yaml          # Tab5 hardware: SoC, display, touch, backlight, RTC, battery
 │   ├── network.yaml         # WiFi, HA API, OTA, web server, screenshot endpoint
@@ -25,18 +25,15 @@ tab5-dashboard/
 │   ├── dashboard/           # The UI (C++), see "Dashboard" below
 │   └── lvgl_screenshot/     # Custom component: GET /screenshot returns a BMP
 ├── script/
-│   ├── screenshot           # Capture display to screenshots/ (PNG)
-│   └── ha                   # Query the Home Assistant REST API
+│   └── screenshot           # Capture display to screenshots/ (PNG)
 ├── docs/                    # Hardware reference (tab5.md, Tab5.pdf)
-├── secrets.yaml             # Stub that includes the repo-root secrets.yaml
-└── boot.flac                # Boot sound
+└── secrets.yaml             # Stub that includes the repo-root secrets.yaml
 ```
 
-Paths inside packages (e.g. `boot.flac`, `components`) resolve relative to
-`tab5-dashboard.yaml`, not the package file.
+Paths inside packages (e.g. `components`) resolve relative to
+`ha-dashboard-desk.yaml`, not the package file.
 
-Packages are merged into `tab5-dashboard.yaml`; lists concatenate, so `esphome.on_boot`
-is written as a list in each package that needs it.
+Packages are merged into `ha-dashboard-desk.yaml`; lists concatenate.
 
 ## Dashboard
 
@@ -57,7 +54,7 @@ is written as a list in each package that needs it.
 - `theme.h/.cpp` — palette, MDI codepoints, font roles, widget helpers. The
   helpers call `lv_obj_remove_style_all`, so styling is fully explicit.
 
-Fonts are declared in `tab5-dashboard.yaml` and mapped to roles in `dashboard: fonts:`.
+Fonts are declared in `ha-dashboard-desk.yaml` and mapped to roles in `dashboard: fonts:`.
 The big numeric fonts (`large`, `display`, `clock`) only contain the glyphs
 listed for them. A new MDI icon needs its codepoint added to `theme.h` and to
 the icon fonts' `glyphs:`.
@@ -72,7 +69,7 @@ Design reference: the "Vision UI Directions" canvas, round 2
 
 ```bash
 make compile     # Compile firmware
-make upload      # Upload OTA to vision.local
+make upload      # Upload OTA to ha-dashboard-desk.local
 make run         # Compile, upload, and show logs
 make logs        # View device logs
 make validate    # Validate config without compiling
@@ -147,7 +144,7 @@ ESPHome. The only external components are the local ones in `components/`.
 
 ## Home Assistant
 
-- The ESPHome integration for Vision must have "Allow the device to perform
-  Home Assistant actions" enabled, or taps do nothing.
-- HA-side template config the dashboard expects (`sensor.vision_next_event`)
-  lives in `config/packages/vision.yaml` at the repo root.
+- The ESPHome integration for the device must have "Allow the device to
+  perform Home Assistant actions" enabled, or taps do nothing.
+- HA-side template config the dashboard expects (`sensor.office_ha_dashboard_desk_next_event`)
+  lives in `config/packages/office_ha_dashboard.yaml` at the repo root.

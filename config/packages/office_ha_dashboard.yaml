@@ -1,9 +1,9 @@
-# Home Assistant config for the Vision dashboard (M5Stack Tab5).
+# Home Assistant config for the Office Home Assistant Dashboard Desk (M5Stack Tab5).
 #
 # Reload with Developer tools -> YAML -> "Template entities".
 #
 # Provides:
-#   sensor.vision_next_event  "Design review · 5:00 PM", or "none"
+#   sensor.office_ha_dashboard_next_event  "Design review · 5:00 PM", or "none"
 #
 # The next timed (non all-day) event that starts within the next 12 hours
 # across Josh's work and home calendars. Events already in progress are
@@ -33,8 +33,8 @@ template:
             hours: 12
         response_variable: agenda
     sensor:
-      - name: "Vision Next Event"
-        unique_id: vision_next_event
+      - name: "Office HA Dashboard Next Event"
+        unique_id: office_ha_dashboard_next_event
         icon: mdi:calendar-clock
         state: >
           {% set now_ts = as_timestamp(now()) %}

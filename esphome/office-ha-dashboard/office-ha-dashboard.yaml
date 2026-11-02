@@ -1,8 +1,8 @@
 substitutions:
-  name: vision
-  friendly_name: Vision
+  name: office-ha-dashboard
+  friendly_name: Office HA Dashboard
   timezone: America/New_York
-  api_encryption_key: !secret tab5__api_encryption_key
+  api_encryption_key: !secret ha_dashboard__api_encryption_key
 
 esphome:
   name: ${name}
