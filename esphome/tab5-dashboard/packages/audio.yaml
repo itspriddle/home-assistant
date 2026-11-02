@@ -35,33 +35,3 @@ speaker:
     buffer_duration: 100ms
     bits_per_sample: 16bit
     sample_rate: 48000
-
-media_player:
-  - platform: speaker
-    id: tab5_media_player
-    name: "Media Player"
-    announcement_pipeline:
-      speaker: tab5_speaker
-      format: FLAC
-      sample_rate: 48000
-      num_channels: 1
-    files:
-      - id: boot_sound
-        file: boot.flac
-
-esphome:
-  on_boot:
-    - priority: -100
-      then:
-        - delay: 3s  # Audio subsystem needs time to settle
-        - select.set:
-            id: dac_output_select
-            option: "LINE1"
-        - delay: 200ms
-        - media_player.volume_set:
-            id: tab5_media_player
-            volume: 80%
-        - delay: 200ms
-        - media_player.speaker.play_on_device_media_file:
-            media_file: boot_sound
-            announcement: true
