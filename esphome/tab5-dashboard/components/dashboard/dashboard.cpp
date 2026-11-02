@@ -311,6 +311,10 @@ void Dashboard::set_printer_progress(float pct) {
   this->model_.status.printer_progress = pct;
   this->mark_(DIRTY_STATUS);
 }
+void Dashboard::set_printer_remaining(float hours) {
+  this->model_.status.printer_remaining = hours;
+  this->mark_(DIRTY_STATUS);
+}
 
 void Dashboard::set_presence(bool present) {
   if (present == this->present_)

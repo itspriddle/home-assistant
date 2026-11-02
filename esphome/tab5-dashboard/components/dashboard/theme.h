@@ -131,6 +131,7 @@ void set_text_color(lv_obj_t *obj, uint32_t color);
 
 std::string fmt_temp(float t, int decimals = 0);  // "72°" / "72.5°" / "--°"
 std::string fmt_pct(float p);  // "43%" / ""
+std::string fmt_duration_h(float hours);  // "51m" / "1h 23m" / ""
 
 }  // namespace dashboard
 }  // namespace esphome

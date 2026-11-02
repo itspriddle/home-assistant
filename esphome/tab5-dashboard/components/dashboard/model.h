@@ -78,6 +78,7 @@ struct Status {
   std::string next_event;  // "Design review · 5:00 PM", empty = hide
   std::string printer_status;  // Bambu print_status: idle / running / pause / finish / failed / offline
   float printer_progress{NAN};  // 0-100
+  float printer_remaining{NAN};  // hours
 };
 
 struct Model {

@@ -72,6 +72,7 @@ class Dashboard : public Component {
   void set_next_event(const std::string &text);
   void set_printer_status(const std::string &status);
   void set_printer_progress(float pct);
+  void set_printer_remaining(float hours);
 
   // Room occupancy: holds off the clock / dimming while present, and
   // arriving wakes the screen

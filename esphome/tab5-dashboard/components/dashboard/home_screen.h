@@ -70,6 +70,7 @@ class HomeScreen : public Screen {
   lv_obj_t *climate_icon_{nullptr};
   lv_obj_t *climate_sub_{nullptr};
   lv_obj_t *printer_title_{nullptr};
+  lv_obj_t *printer_time_{nullptr};
   lv_obj_t *printer_pct_{nullptr};
   lv_obj_t *printer_bar_{nullptr};
 };

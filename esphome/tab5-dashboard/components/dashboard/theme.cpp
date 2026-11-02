@@ -145,5 +145,17 @@ std::string fmt_pct(float p) {
   return buf;
 }
 
+std::string fmt_duration_h(float hours) {
+  if (std::isnan(hours) || hours < 0)
+    return "";
+  int mins = static_cast<int>(std::lround(hours * 60.0f));
+  char buf[16];
+  if (mins < 60)
+    snprintf(buf, sizeof(buf), "%dm", mins);
+  else
+    snprintf(buf, sizeof(buf), "%dh %dm", mins / 60, mins % 60);
+  return buf;
+}
+
 }  // namespace dashboard
 }  // namespace esphome

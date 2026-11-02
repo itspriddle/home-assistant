@@ -209,6 +209,12 @@ sensor:
     internal: true
     on_value:
       - lambda: 'id(dash).set_printer_progress(x);'
+  - platform: homeassistant
+    id: ha_printer_remaining
+    entity_id: sensor.office_p2s_remaining_time
+    internal: true
+    on_value:
+      - lambda: 'id(dash).set_printer_remaining(x);'
 
 # ============================================================
 # HA -> dashboard: text and on/off values

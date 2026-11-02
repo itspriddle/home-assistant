@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${WEB_USERNAME:?Set WEB_USERNAME in .envrc (web_username from secrets.yaml)}"
-: "${WEB_PASSWORD:?Set WEB_PASSWORD in .envrc (web_password from secrets.yaml)}"
+: "${ESPHOME_WEB_USERNAME:?Set WEB_USERNAME in .envrc (web_username from secrets.yaml)}"
+: "${ESPHOME_WEB_PASSWORD:?Set WEB_PASSWORD in .envrc (web_password from secrets.yaml)}"
 
 timestamp=$(date +"%Y-%m-%d-%H-%M-%S")
 mkdir -p screenshots
@@ -12,7 +12,7 @@ trap 'rm -f "$temp_file"' EXIT
 
 # Credentials go through stdin so they don't show up in the process list
 curl -sf -m 60 --digest --config - "http://vision.local/screenshot" -o "$temp_file" \
-  <<<"user = \"${WEB_USERNAME}:${WEB_PASSWORD}\""
+  <<<"user = \"${ESPHOME_WEB_USERNAME}:${ESPHOME_WEB_PASSWORD}\""
 sips -s format png "$temp_file" --out "$output" >/dev/null
 
 echo "$output"

@@ -236,9 +236,14 @@ void HomeScreen::build_tiles_(lv_obj_t *parent) {
   flex_row(head, 8);
   this->printer_title_ = label(head, fonts.label, color::TEXT, "P2S");
   lv_obj_set_flex_grow(this->printer_title_, 1);
-  this->printer_pct_ = label(head, fonts.small, color::MUTED, "");
-  this->printer_bar_ = bar(text, 100, 8, color::LINE, color::PRINTER);
-  lv_obj_set_width(this->printer_bar_, lv_pct(100));
+  lv_label_set_long_mode(this->printer_title_, LV_LABEL_LONG_DOT);
+  this->printer_time_ = label(head, fonts.small, color::MUTED, "");
+  lv_obj_t *progress = box(text);
+  lv_obj_set_size(progress, lv_pct(100), LV_SIZE_CONTENT);
+  flex_row(progress, 8);
+  this->printer_pct_ = label(progress, fonts.small, color::MUTED, "");
+  this->printer_bar_ = bar(progress, 100, 8, color::LINE, color::PRINTER);
+  lv_obj_set_flex_grow(this->printer_bar_, 1);
 }
 
 // ------------------------------------------------------------------
@@ -398,8 +403,6 @@ void HomeScreen::update_status_(const Model &model) {
     state = "paused";
   else if (ps == "prepare")
     state = "preparing";
-  else if (ps == "finish")
-    state = "done";
   else if (ps == "failed")
     state = "failed";
   else if (ps == "offline" || ps == "unavailable")
@@ -408,10 +411,14 @@ void HomeScreen::update_status_(const Model &model) {
     state = "idle";
   set_text(this->printer_title_, "P2S " + state);
 
+  std::string remaining = active ? fmt_duration_h(s.printer_remaining) : "";
+  set_text(this->printer_time_, remaining);
+  hide(this->printer_time_, remaining.empty());
+
   bool show_pct = active && !std::isnan(s.printer_progress);
   set_text(this->printer_pct_, show_pct ? fmt_pct(s.printer_progress) : "");
   hide(this->printer_pct_, !show_pct);
-  hide(this->printer_bar_, !active);
+  hide(lv_obj_get_parent(this->printer_bar_), !active);
   set_bar(this->printer_bar_, active ? s.printer_progress : 0);
 }
 
