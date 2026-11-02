@@ -7,7 +7,7 @@
 
 packages:
   kauf: github://KaufHA/kauf-plugs/packages/kauf-plf12.yaml@v2.14
-  base: !include base.yaml
+  base: !include ../base.yaml
 
 esphome:
   name: ${name}

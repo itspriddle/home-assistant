@@ -1,10 +1,10 @@
 substitutions:
-  name: kauf-plug-f1e42f
+  name: kauf-plug-rack-light
   friendly_name: Kauf Plug (Rack Light)
   api_encryption_key: !secret kauf_plug_rack_light__api_encryption_key
 
 packages:
-  plug: !include common/kauf-plug.yaml
+  plug: !include ../common/hardware/kauf-plug.yaml
 
 select:
   - id: !extend select_button

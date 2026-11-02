@@ -5,7 +5,7 @@ substitutions:
   api_encryption_key: !secret kauf_plug_rack__api_encryption_key
 
 packages:
-  plug: !include common/kauf-plug.yaml
+  plug: !include ../common/hardware/kauf-plug.yaml
 
 switch:
   - id: !extend relay

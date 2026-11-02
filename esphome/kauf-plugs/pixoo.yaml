@@ -1,0 +1,12 @@
+substitutions:
+  name: kauf-plug-pixoo
+  friendly_name: Kauf Plug Pixoo
+  timezone: America/New_York
+  api_encryption_key: !secret kauf_plug_pixoo__api_encryption_key
+
+packages:
+  plug: !include ../common/hardware/kauf-plug.yaml
+
+api:
+  encryption:
+    key: 6/daO+BcjP2OLaCqr6cmRL9AHLdbmGJIB9MUinqOQOU=

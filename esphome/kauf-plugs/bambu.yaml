@@ -1,8 +1,8 @@
 substitutions:
   name: kauf-plug-bambu
-  friendly_name: Kauf Plug (Bambu P2S)
+  friendly_name: Kauf Plug Bambu P2S
   timezone: America/New_York
   api_encryption_key: !secret kauf_plug_bambu__api_encryption_key
 
 packages:
-  plug: !include common/kauf-plug.yaml
+  plug: !include ../common/hardware/kauf-plug.yaml
