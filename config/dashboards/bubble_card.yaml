@@ -9,15 +9,18 @@ views:
       heading_style: title
     - type: custom:calendar-card-pro
       entities:
-        - calendar.home
+        - entity: calendar.home
+          accent_color: home-assistant
         - entity: calendar.josh_work
-          accent_color: '#4C730A'
+          accent_color: home-assistant
           filter_field: description
           allowlist: 'google\.com'
         - entity: calendar.chrys
-          accent_color: '#DC19D7'
+          accent_color: home-assistant
           filter_field: description
           allowlist: 'zoom\.us'
+        - entity: calendar.holidays
+          accent_color: home-assistant
       show_empty_days: true
       filter_duplicates: true
       show_location: false
