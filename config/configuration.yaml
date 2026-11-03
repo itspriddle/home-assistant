@@ -64,24 +64,3 @@ homeassistant:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
-
-homekit:
-  - filter:
-      # include_domains:
-      #   - light
-      #   - climate
-      exclude_entity_globs:
-        - camera.*
-        - sensor.office_p2s_*
-        - binary_sensor.office_p2s_*
-        - sensor.forecast_*
-        - switch.dns*
-        - switch.*_filtering
-        - switch.*_safe_search
-        - switch.*_query_log
-        - switch.zigbee*
-        - button.zigbee*
-        - automation.*
-        - scene.*
-        - button.thermostat*
-        - light.*_all

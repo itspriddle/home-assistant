@@ -1,0 +1,55 @@
+homekit:
+  # Allowlist only: anything not listed here stays out of HomeKit.
+  - filter:
+      include_entities:
+        # Ecobee thermostat + remote sensors
+        - climate.thermostat
+        - sensor.bedroom_temperature
+        - sensor.living_room_temperature
+        - sensor.office_temperature
+        - binary_sensor.bedroom_occupancy
+        - binary_sensor.living_room_occupancy
+        - binary_sensor.office_occupancy
+        - binary_sensor.thermostat_occupancy
+
+        # Shelly BLU H&T
+        - sensor.bedroom_shelly_h_t_bedroom_temperature
+        - sensor.bedroom_shelly_h_t_bedroom_humidity
+        - sensor.kitchen_shelly_h_t_kitchen_temperature
+        - sensor.kitchen_shelly_h_t_kitchen_humidity
+        - sensor.living_room_shelly_h_t_living_room_temperature
+        - sensor.living_room_shelly_h_t_living_room_humidity
+        - sensor.office_shelly_h_t_office_temperature
+        - sensor.office_shelly_h_t_office_humidity
+
+        # Hue lights (individual bulbs, not room groups)
+        - light.bedroom_chrys_nightstand
+        - light.bedroom_josh_nightstand
+        - light.hallway_1
+        - light.hallway_2
+        - light.hallway_3
+        - light.hallway_4
+        - light.hallway_5
+        - light.hallway_6
+        - light.kitchen_entrance_1
+        - light.kitchen_entrance_2
+        - light.kitchen_main_1
+        - light.kitchen_main_2
+        - light.kitchen_main_3
+        - light.kitchen_sink
+        - light.living_room_ceiling_1
+        - light.living_room_ceiling_2
+        - light.living_room_chair
+        - light.living_room_couch_left
+        - light.living_room_couch_right
+        - light.living_room_tv_1
+        - light.living_room_tv_2
+        - light.office_desk_lamp
+        - light.office_gradient_lamp
+        - light.office_lamp_1
+        - light.office_lamp_2
+        - light.office_play_1
+        - light.office_play_2
+        - light.office_tall_lamp_1
+        - light.office_tall_lamp_2
+        - light.office_tall_lamp_3
