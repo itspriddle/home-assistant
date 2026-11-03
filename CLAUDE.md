@@ -35,7 +35,7 @@ docker exec homeassistant hass --script check_config
 
 ### Home Assistant (`config/`, mounted to `/config`)
 
-- `configuration.yaml` - Global config only: Lovelace resources/dashboards, HomeKit filter, package include
+- `configuration.yaml` - Global config only: Lovelace resources/dashboards, package include
 - `packages/` - Hand-written config, one file per feature (emby, holiday, meeting, thermostat, vision, weather). Each file can mix domains (`template:`, `sensor:`, `automation:`, ...). New YAML config goes here.
 - `automations.yaml`, `scripts.yaml`, `scenes.yaml` - Owned by the HA UI editors; don't hand-edit
 - `dashboards/bubble_card.yaml` - Main dashboard (YAML mode, Bubble Card); `bubble_card/` holds Bubble Card modules
