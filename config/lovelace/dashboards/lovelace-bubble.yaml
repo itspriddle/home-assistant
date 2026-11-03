@@ -1,0 +1,5 @@
+mode: yaml
+title: Bubble Card
+icon: mdi:message-alert
+show_in_sidebar: true
+filename: dashboards/bubble_card.yaml

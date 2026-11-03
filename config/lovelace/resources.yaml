@@ -1,0 +1,21 @@
+# Lovelace resources (resource_mode: yaml). HACS won't add these; list them here.
+# custom-brand-icons is loaded via frontend.extra_module_url instead.
+- url: /hacsfiles/Bubble-Card/bubble-card.js
+  type: module
+- url: /hacsfiles/clock-weather-card/clock-weather-card.js
+  type: module
+- url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+  type: module
+- url: /hacsfiles/calendar-card-pro/calendar-card-pro.js
+  type: module
+- url: /hacsfiles/bambu-dashboard-card/bambu-dashboard-card.js
+  type: module
+# Bump ?v= when the file changes to bust the frontend cache.
+- url: /local/emby-now-playing-card.js?v=1
+  type: module
+- url: 'https://fonts.googleapis.com/css?family=Raleway'
+  type: css
+- url: /hacsfiles/weather-radar-card/weather-radar-card.js
+  type: module
+- url: /hacsfiles/weather-bar-card/weather-bar-card.js?v=1.2.0
+  type: module

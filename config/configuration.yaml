@@ -7,55 +7,11 @@ frontend:
   extra_module_url:
     - /hacsfiles/custom-brand-icons/custom-brand-icons.js
 
+# Dashboard registrations: one file per dashboard, named by URL path (must contain a hyphen).
 lovelace:
   resource_mode: yaml
-  resources:
-    - url: /hacsfiles/Bubble-Card/bubble-card.js
-      type: module
-    - url: /hacsfiles/clock-weather-card/clock-weather-card.js
-      type: module
-    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
-      type: module
-    - url: /hacsfiles/calendar-card-pro/calendar-card-pro.js
-      type: module
-    - url: /hacsfiles/bambu-dashboard-card/bambu-dashboard-card.js
-      type: module
-    # Bump ?v= when the file changes to bust the frontend cache.
-    - url: /local/emby-now-playing-card.js?v=1
-      type: module
-    - url: 'https://fonts.googleapis.com/css?family=Raleway'
-      type: css
-    - url: /hacsfiles/custom-brand-icons/custom-brand-icons.js
-      type: js
-    - url: /hacsfiles/weather-radar-card/weather-radar-card.js
-      type: module
-    - url: /hacsfiles/weather-bar-card/weather-bar-card.js?v=1.2.0
-      type: module
-  dashboards:
-    lovelace-bubble:
-      mode: yaml
-      title: Bubble Card
-      icon: mdi:message-alert
-      show_in_sidebar: true
-      filename: dashboards/bubble_card.yaml
-    bambu-dashboard:
-      mode: yaml
-      title: Bambu P2S
-      icon: phu:bambu-lab-alt
-      show_in_sidebar: true
-      filename: dashboards/bambu-dashboard.yaml
-    network-dashboard:
-      mode: yaml
-      title: Network
-      icon: mdi:network-pos
-      show_in_sidebar: true
-      filename: dashboards/network.yaml
-    weather-dashboard:
-      mode: yaml
-      title: Weather
-      icon: mdi:weather-partly-cloudy
-      show_in_sidebar: true
-      filename: dashboards/weather.yaml
+  resources: !include lovelace/resources.yaml
+  dashboards: !include_dir_named lovelace/dashboards
 
 homeassistant:
   packages: !include_dir_named packages

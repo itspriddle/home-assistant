@@ -1,0 +1,5 @@
+mode: yaml
+title: Weather
+icon: mdi:weather-partly-cloudy
+show_in_sidebar: true
+filename: dashboards/weather.yaml

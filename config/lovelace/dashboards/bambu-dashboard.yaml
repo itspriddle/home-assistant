@@ -1,0 +1,5 @@
+mode: yaml
+title: Bambu P2S
+icon: phu:bambu-lab-alt
+show_in_sidebar: true
+filename: dashboards/bambu-dashboard.yaml

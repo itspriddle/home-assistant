@@ -1,0 +1,5 @@
+mode: yaml
+title: Network
+icon: mdi:network-pos
+show_in_sidebar: true
+filename: dashboards/network.yaml
