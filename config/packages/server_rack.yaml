@@ -1,0 +1,17 @@
+automation:
+  - id: server_rack_button_toggles_rack_light
+    alias: Server rack button toggles rack light
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: event.server_rack_shelly_blu_button_button
+        not_from:
+          - unavailable
+          - unknown
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.attributes.event_type == 'press' }}"
+    actions:
+      - action: switch.toggle
+        target:
+          entity_id: switch.server_rack_kauf_plug_rack_light
