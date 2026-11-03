@@ -7,6 +7,10 @@ views:
       icon: mdi:calendar
       heading: Now
       heading_style: title
+    - type: custom:weather-bar-card
+      entity: weather.forecast_home
+      name: Home
+      shape: floating
     - type: custom:calendar-card-pro
       entities:
         - entity: calendar.home
@@ -41,8 +45,8 @@ views:
           icon_size: 14px
           font_size: 12px
           color: var(--primary-text-color)
-    - type: custom:clock-weather-card
-      entity: weather.forecast_home
+    # - type: custom:clock-weather-card
+    #   entity: weather.forecast_home
     - type: custom:emby-now-playing-card
       entity: sensor.emby_now_playing
       library:
@@ -139,7 +143,7 @@ views:
       name: Humidity
       icon: mdi:water-percent
       entities:
-      - entity: sensor.shelly_blu_h_t_2a9f_humidity
+      - entity: sensor.living_room_shelly_h_t_living_room_humidity
         name: Office
       - entity: sensor.thermostat_current_humidity
         name: Living Room
@@ -176,7 +180,7 @@ views:
     show_name: true
     show_state: true
     show_icon: true
-    entity: sensor.shelly_blu_h_t_2a9f_humidity
+    entity: sensor.living_room_shelly_h_t_living_room_humidity
     name:
       type: area
     show_entity_picture: false

@@ -5,7 +5,7 @@ default_config:
 frontend:
   themes: !include_dir_merge_named themes
   extra_module_url:
-    - /local/community/custom-brand-icons/custom-brand-icons.js
+    - /hacsfiles/custom-brand-icons/custom-brand-icons.js
 
 lovelace:
   resource_mode: yaml
@@ -25,8 +25,12 @@ lovelace:
       type: module
     - url: 'https://fonts.googleapis.com/css?family=Raleway'
       type: css
-    - type: js
-      url: /local/community/custom-brand-icons/custom-brand-icons.js
+    - url: /hacsfiles/custom-brand-icons/custom-brand-icons.js
+      type: js
+    - url: /hacsfiles/weather-radar-card/weather-radar-card.js
+      type: module
+    - url: /hacsfiles/weather-bar-card/weather-bar-card.js?v=1.2.0
+      type: module
   dashboards:
     lovelace-bubble:
       mode: yaml
@@ -40,6 +44,18 @@ lovelace:
       icon: phu:bambu-lab-alt
       show_in_sidebar: true
       filename: dashboards/bambu-dashboard.yaml
+    network-dashboard:
+      mode: yaml
+      title: Network
+      icon: mdi:network-pos
+      show_in_sidebar: true
+      filename: dashboards/network.yaml
+    weather-dashboard:
+      mode: yaml
+      title: Weather
+      icon: mdi:weather-partly-cloudy
+      show_in_sidebar: true
+      filename: dashboards/weather.yaml
 
 homeassistant:
   packages: !include_dir_named packages
@@ -51,10 +67,13 @@ scene: !include scenes.yaml
 
 homekit:
   - filter:
+      # include_domains:
+      #   - light
+      #   - climate
       exclude_entity_globs:
         - camera.*
-        - sensor.p2s_*
-        - binary_sensor.p2s_*
+        - sensor.office_p2s_*
+        - binary_sensor.office_p2s_*
         - sensor.forecast_*
         - switch.dns*
         - switch.*_filtering

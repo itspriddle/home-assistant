@@ -1,0 +1,25 @@
+views:
+  - title: Weather
+    icon: mdi:weather-partly-cloudy
+    type: sections
+    max_columns: 3
+    sections:
+    - type: grid
+      cards:
+      - type: custom:weather-bar-card
+        entity: weather.forecast_home
+        name: Home
+        shape: floating
+      - type: heading
+        heading: Now
+        icon: mdi:weather-partly-cloudy
+      - type: custom:clock-weather-card
+        entity: weather.forecast_home
+    - type: grid
+      cards:
+      - type: heading
+        heading: Radar
+        icon: mdi:radar
+      - type: 'custom:weather-radar-card'
+        icon: mdi:radar
+        name: Radar
