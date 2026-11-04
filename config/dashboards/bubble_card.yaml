@@ -134,6 +134,8 @@ views:
         name: Office
       - entity: sensor.bedroom_temperature
         name: Bedroom
+      - entity: sensor.kitchen_shelly_h_t_kitchen_temperature
+        name: Kitchen
       show:
         labels: true
         labels_secondary: true
@@ -143,10 +145,14 @@ views:
       name: Humidity
       icon: mdi:water-percent
       entities:
-      - entity: sensor.living_room_shelly_h_t_living_room_humidity
-        name: Office
       - entity: sensor.thermostat_current_humidity
         name: Living Room
+      - entity: sensor.living_room_shelly_h_t_living_room_humidity
+        name: Office
+      - entity: sensor.bedroom_shelly_h_t_bedroom_humidity
+        name: Bedroom
+      - entity: sensor.kitchen_shelly_h_t_kitchen_humidity
+        name: Kitchen
       show:
         labels: true
         average: true
