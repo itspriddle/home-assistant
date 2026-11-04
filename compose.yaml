@@ -6,6 +6,7 @@ services:
       - ./config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     stop_grace_period: 60s
     privileged: true

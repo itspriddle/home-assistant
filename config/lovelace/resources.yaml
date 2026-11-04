@@ -19,3 +19,5 @@
   type: module
 - url: /hacsfiles/weather-bar-card/weather-bar-card.js?v=1.2.0
   type: module
+- url: /hacsfiles/docker-card/docker-card.js
+  type: module

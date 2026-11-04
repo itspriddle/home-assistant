@@ -1,0 +1,28 @@
+monitor_docker:
+  - name: Docker
+    containers:
+      - airprint
+      - apprise-web
+      - apprise-db
+      - beszel
+      - beszel-agent
+      - homeassistant
+      - immich_server
+      - immich_machine_learning
+      - immich_redis
+      - immich_postgres
+      - nginx-proxy-manager
+      - ntfy
+      - prowlarr
+      - speedtest-tracker
+      - zigbee2mqtt
+      - mosquitto
+    rename:
+      homeassistant: Home Assistant
+    monitored_conditions:
+      - version
+      - containers_running
+      - containers_total
+      - state
+      - status
+      - memory
