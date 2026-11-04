@@ -1,0 +1,8 @@
+substitutions:
+  name: kauf-plug-desk
+  friendly_name: Kauf Plug (Desk)
+  timezone: America/New_York
+  api_encryption_key: !secret kauf_plug_desk__api_encryption_key
+
+packages:
+  plug: !include ../common/hardware/kauf-plug.yaml
