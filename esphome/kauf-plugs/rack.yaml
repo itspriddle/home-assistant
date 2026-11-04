@@ -1,6 +1,6 @@
 substitutions:
   name: kauf-plug-rack
-  friendly_name: Kauf Rack Plug
+  friendly_name: Kauf Plug (Rack)
   timezone: America/New_York
   api_encryption_key: !secret kauf_plug_rack__api_encryption_key
 
