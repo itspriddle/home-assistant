@@ -177,7 +177,7 @@ views:
       - type: custom:bubble-card
         card_type: button
         button_type: state
-        entity: binary_sensor.corellia_status
+        entity: binary_sensor.server_rack_corellia_status
         name: corellia
         icon: mdi:server
         styles: |
@@ -186,22 +186,22 @@ views:
           }
         sub_button:
           main:
-            - entity: sensor.corellia_cpu
+            - entity: sensor.server_rack_corellia_cpu
               icon: mdi:cpu-64-bit
               show_icon: true
               show_state: true
               show_background: false
-            - entity: sensor.corellia_ram
+            - entity: sensor.server_rack_corellia_ram
               icon: mdi:memory
               show_icon: true
               show_state: true
               show_background: false
-            - entity: sensor.corellia_disk
+            - entity: sensor.server_rack_corellia_disk
               icon: mdi:harddisk
               show_icon: true
               show_state: true
               show_background: false
-            - entity: sensor.corellia_temperature
+            - entity: sensor.server_rack_corellia_temperature
               icon: mdi:thermometer
               show_icon: true
               show_state: true

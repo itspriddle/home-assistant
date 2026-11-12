@@ -186,18 +186,30 @@ views:
     show_name: true
     show_state: true
     show_icon: true
-    entity: sensor.living_room_shelly_h_t_living_room_humidity
-    name:
-      type: area
+    entity: sensor.shelly_h_t_outside_humidity
+    name: "Outside"
+    show_entity_picture: false
+  - type: entity
+    show_name: true
+    show_state: true
+    show_icon: true
+    entity: sensor.shelly_h_t_outside_temperature
+    name: "Outside"
     show_entity_picture: false
   - type: entity
     show_name: true
     show_state: true
     show_icon: true
     entity: sensor.office_temperature
+    name: "Office"
+    color: red
+  - type: entity
+    show_name: true
+    show_state: true
+    show_icon: true
+    entity: sensor.office_shelly_h_t_office_humidity
     name:
       type: area
-    color: red
   - type: entity
     show_name: true
     show_state: true
