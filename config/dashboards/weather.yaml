@@ -23,3 +23,14 @@ views:
       - type: 'custom:weather-radar-card'
         icon: mdi:radar
         name: Radar
+    - type: grid
+      cards:
+      - type: heading
+        heading: Wind
+        icon: mdi:weather-windy
+      - type: custom:windy-card
+        hide_message: true
+        default_mode: map_only
+        overlay: wind
+        zoom: 10
+        aspect_ratio: '16:9'
