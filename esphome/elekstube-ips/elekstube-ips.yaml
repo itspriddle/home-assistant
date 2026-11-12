@@ -1,0 +1,209 @@
+# EleksTube IPS (small white 4-digit unit, ESP32-D0WD, 4MB flash)
+#
+# HH:MM clock. Pin map matches the original 2021 EleksTube IPS (EleksTubeHAX
+# HARDWARE_ELEKSTUBE_CLOCK), verified on this 4-digit board. Unlike the
+# 6-digit board there are no WS2812 LEDs behind the panels.
+#
+# All panels share SPI, DC and RST. Each panel's CS is a 74HC595 output
+# (active low): Q0 (left) .. Q3 (right). One display driver and framebuffer
+# serve every panel: select a panel via the 595, set panel_digit, then update
+# the display.
+#
+# Time: DS3231 RTC (0x68) keeps time offline; Home Assistant or SNTP syncs it.
+# Buttons: MODE toggles 12/24h. LEFT/RIGHT/POWER are exposed to HA only.
+#
+# Panel power (GPIO27) is held on: cutting it wipes the panels' init state,
+# and the display driver can't re-init without a reboot.
+
+substitutions:
+  name: ha-elekstube-ips
+  api_encryption_key: !secret elekstube_ips__api_encryption_key
+  panel_count: "4"
+  digits_dir: digits/flip
+
+packages:
+  base: !include ../common/base.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: "EleksTube IPS"
+  on_boot:
+    # Before the display sets up: power the panels and select all of them so
+    # the reset and init sequence reach every panel at once.
+    - priority: 800
+      then:
+        - lambda: |-
+            for (auto pin : {GPIO_NUM_14, GPIO_NUM_16, GPIO_NUM_17, GPIO_NUM_27}) {
+              gpio_reset_pin(pin);
+              gpio_set_direction(pin, GPIO_MODE_OUTPUT);
+              gpio_set_level(pin, 0);
+            }
+            gpio_set_level(GPIO_NUM_27, 1);
+            id(select_panels)->execute(0xFF);
+    - priority: 600
+      then:
+        - ds1307.read_time: rtc
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+globals:
+  # Digit the next display update draws: 0-9, BLANK or NO_TIME.
+  - id: panel_digit
+    type: int
+    initial_value: "0"
+  # Digit currently on each panel; anything out of range forces a redraw.
+  - id: shown_digits
+    type: std::array<int, ${panel_count}>
+    initial_value: "{-99, -99, -99, -99}"
+  - id: use_24h
+    type: bool
+    restore_value: true
+    initial_value: "false"
+
+# --- Time ---
+time:
+  - platform: ds1307
+    id: rtc
+    update_interval: never
+  - platform: homeassistant
+    id: ha_time
+    on_time_sync:
+      - ds1307.write_time:
+          id: rtc
+  # Also sync from NTP so the clock sets itself without HA.
+  - platform: sntp
+    id: ntp_time
+    on_time_sync:
+      - ds1307.write_time:
+          id: rtc
+
+interval:
+  - interval: 1s
+    then:
+      - script.execute: update_clock
+
+# --- Panels ---
+spi:
+  id: tft_spi
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+display:
+  - platform: mipi_spi
+    id: tft
+    # Same 135x240 panel as the T-Display, but without that preset's CS pin.
+    model: ST7789V
+    dimensions:
+      width: 135
+      height: 240
+      offset_width: 52
+      offset_height: 40
+    invert_colors: true
+    spi_id: tft_spi
+    dc_pin: GPIO25
+    reset_pin: GPIO26
+    data_rate: 40MHz
+    buffer_size: 25%
+    update_interval: never
+    lambda: |-
+      static image::Image *const DIGITS[] = {
+          id(digit_0), id(digit_1), id(digit_2), id(digit_3), id(digit_4),
+          id(digit_5), id(digit_6), id(digit_7), id(digit_8), id(digit_9),
+      };
+      const int digit = id(panel_digit);
+      it.fill(Color::BLACK);
+      if (digit >= 0 && digit <= 9) {
+        it.image(0, 0, DIGITS[digit]);
+      } else if (digit == -1) {  // NO_TIME
+        it.filled_rectangle(37, 115, 61, 10, Color(0x40, 0xC0, 0x10));
+      }
+
+image:
+  - { platform: file, file: "${digits_dir}/0.png", id: digit_0, type: BINARY }
+  - { platform: file, file: "${digits_dir}/1.png", id: digit_1, type: BINARY }
+  - { platform: file, file: "${digits_dir}/2.png", id: digit_2, type: BINARY }
+  - { platform: file, file: "${digits_dir}/3.png", id: digit_3, type: BINARY }
+  - { platform: file, file: "${digits_dir}/4.png", id: digit_4, type: BINARY }
+  - { platform: file, file: "${digits_dir}/5.png", id: digit_5, type: BINARY }
+  - { platform: file, file: "${digits_dir}/6.png", id: digit_6, type: BINARY }
+  - { platform: file, file: "${digits_dir}/7.png", id: digit_7, type: BINARY }
+  - { platform: file, file: "${digits_dir}/8.png", id: digit_8, type: BINARY }
+  - { platform: file, file: "${digits_dir}/9.png", id: digit_9, type: BINARY }
+
+script:
+  # Shift a CS mask into the 74HC595. Bit n set = panel on Qn selected.
+  - id: select_panels
+    parameters:
+      mask: int
+    then:
+      - lambda: |-
+          const uint8_t out = ~static_cast<uint8_t>(mask);  // CS is active low
+          gpio_set_level(GPIO_NUM_17, 0);
+          for (int bit = 7; bit >= 0; bit--) {  // MSB first: byte bit n -> Qn
+            gpio_set_level(GPIO_NUM_14, (out >> bit) & 1);
+            gpio_set_level(GPIO_NUM_16, 1);
+            gpio_set_level(GPIO_NUM_16, 0);
+          }
+          gpio_set_level(GPIO_NUM_17, 1);
+
+  # Redraw only the panels whose digit changed.
+  - id: update_clock
+    mode: single
+    then:
+      - lambda: |-
+          constexpr int NO_TIME = -1;
+          constexpr int BLANK = -2;
+          std::array<int, ${panel_count}> want;
+          const auto now = id(rtc).now();
+          if (!now.is_valid()) {
+            want.fill(NO_TIME);
+          } else {
+            int hour = now.hour;
+            if (!id(use_24h)) {
+              hour = hour % 12 == 0 ? 12 : hour % 12;
+            }
+            want = {hour / 10, hour % 10, now.minute / 10, now.minute % 10};
+            if (!id(use_24h) && want[0] == 0) {
+              want[0] = BLANK;
+            }
+          }
+          for (int panel = 0; panel < ${panel_count}; panel++) {
+            if (want[panel] == id(shown_digits)[panel]) continue;
+            id(select_panels)->execute(1 << panel);
+            id(panel_digit) = want[panel];
+            id(tft).update();
+            id(shown_digits)[panel] = want[panel];
+          }
+          id(select_panels)->execute(0x00);
+
+# --- Buttons (active low, external pull-ups; 34/35 are input-only) ---
+binary_sensor:
+  - platform: gpio
+    name: "Button Left"
+    pin: { number: GPIO33, inverted: true }
+    filters: [delayed_on_off: 20ms]
+  - platform: gpio
+    name: "Button Mode"
+    pin: { number: GPIO32, inverted: true }
+    filters: [delayed_on_off: 20ms]
+    on_press:
+      - lambda: id(use_24h) = !id(use_24h);
+      - script.execute: update_clock
+  - platform: gpio
+    name: "Button Right"
+    pin: { number: GPIO35, inverted: true }
+    filters: [delayed_on_off: 20ms]
+  - platform: gpio
+    name: "Button Power"
+    pin: { number: GPIO34, inverted: true }
+    filters: [delayed_on_off: 20ms]
+
+# DS3231 RTC at 0x68.
+i2c:
+  sda: GPIO21
+  scl: GPIO22
