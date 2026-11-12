@@ -56,8 +56,16 @@ has none.
 ### Driving them from ESPHome
 
 - One display component for all panels, no `cs_pin`. Select a panel via the
-  595, then call `update()` (synchronous). One framebuffer is reused, so a
-  partial buffer (`buffer_size: 25%`) is plenty.
+  595, then call `update()` (synchronous). One framebuffer is reused for every
+  panel. `components/elekstube_ui` does the selecting, and powers and selects
+  all panels before the display sets up.
+- Use `buffer_size: 100%` (~65 KB RAM). With 25% every update runs four
+  passes: a full-panel redraw took ~80 ms on average versus ~48 ms with one
+  pass. A single pass also allows partial updates (only the drawn rect is
+  flushed). With a partial buffer, `mipi_spi` stops at the first pass that
+  draws nothing.
+- No CS pin means `mipi_spi` defaults to SPI MODE3, so anything else on the
+  bus (e.g. raw panel commands) has to match.
 - Separate display components per panel don't work: the ESP32 SPI driver
   allows only 3 devices per bus (`Add device failed`).
 - Select all panels (mask `0xFF`) before the display's setup so the reset
@@ -78,6 +86,9 @@ has none.
 
 - App partition 1.75 MB (ESPHome default 4 MB OTA layout)
 - RAM ~180 KB static; ~130 KB free with Wi-Fi, API and a 25% display buffer
+  (the 100% buffer takes ~49 KB more)
+- Fonts instead of images: three 4 bpp big-digit faces plus a label font build
+  to 1.20 MB (65% of the app partition)
 - A full-colour 135 × 240 image is ~65 KB (RGB565); 10 digits ≈ 650 KB
   flash. Runtime images (`online_image`) need the same in RAM each.
 

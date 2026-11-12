@@ -1,0 +1,82 @@
+# EleksTube IPS, small white 4-digit unit (ESP32-D0WD, 4 MB flash, no PSRAM).
+# Pin map: esphome/elekstube-ips/docs/hardware.md.
+# Provides: tft_spi, tft (display), rtc (DS3231), button_left/mode/right/power,
+# and pin substitutions for the panel power and 74HC595 chip-select lines.
+#
+# The display has no CS pin of its own: something must select panels through
+# the 595 and power them before it sets up (the elekstube_ui component does).
+
+substitutions:
+  tft_dc_pin: GPIO25
+  panel_power_pin: GPIO27
+  select_data_pin: GPIO14
+  select_clock_pin: GPIO16
+  select_latch_pin: GPIO17
+  tft_data_rate: 40MHz
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+spi:
+  id: tft_spi
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+display:
+  - platform: mipi_spi
+    id: tft
+    # Same 135x240 panel as the T-Display, but without that preset's CS pin.
+    model: ST7789V
+    dimensions:
+      width: 135
+      height: 240
+      offset_width: 52
+      offset_height: 40
+    invert_colors: true
+    spi_id: tft_spi
+    dc_pin:
+      number: ${tft_dc_pin}
+      allow_other_uses: true
+    reset_pin: GPIO26
+    data_rate: ${tft_data_rate}
+    # No CS pin, so MODE3 (the default without one); elekstube_ui matches it.
+    spi_mode: MODE3
+    # 100%: one pass per update (elekstube_ui relies on it for partial redraws).
+    buffer_size: 100%
+    update_interval: never
+
+# DS3231 RTC at 0x68 keeps time offline.
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+
+time:
+  - platform: ds1307
+    id: rtc
+    update_interval: never
+
+# Active low with external pull-ups; 34/35 are input-only.
+# Physical order: LEFT, MODE, RIGHT grouped on the left, POWER alone on the right.
+binary_sensor:
+  - platform: gpio
+    id: button_left
+    name: "Button Left"
+    pin: { number: GPIO33, inverted: true }
+    filters: [delayed_on_off: 20ms]
+  - platform: gpio
+    id: button_mode
+    name: "Button Mode"
+    pin: { number: GPIO32, inverted: true }
+    filters: [delayed_on_off: 20ms]
+  - platform: gpio
+    id: button_right
+    name: "Button Right"
+    pin: { number: GPIO35, inverted: true }
+    filters: [delayed_on_off: 20ms]
+  - platform: gpio
+    id: button_power
+    name: "Button Power"
+    pin: { number: GPIO34, inverted: true }
+    filters: [delayed_on_off: 20ms]
