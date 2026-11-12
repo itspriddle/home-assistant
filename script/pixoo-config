@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Print Pixoo page config cycling cats, thorn, and june images.
+# Once a group runs out, the remaining groups keep cycling.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/../config/www/img"
+
+shopt -s nullglob
+cats=(cats*.png)
+thorn=(thorn*.png)
+june=(june*.png)
+
+max=${#cats[@]}
+(( ${#thorn[@]} > max )) && max=${#thorn[@]}
+(( ${#june[@]} > max )) && max=${#june[@]}
+
+page() {
+  cat <<EOF
+- components:
+    - image_path: /config/www/img/$1
+      position:
+        - 0
+        - 0
+      type: image
+  page_type: components
+EOF
+}
+
+for (( i = 0; i < max; i++ )); do
+  (( i < ${#cats[@]} )) && page "${cats[i]}"
+  (( i < ${#thorn[@]} )) && page "${thorn[i]}"
+  (( i < ${#june[@]} )) && page "${june[i]}"
+done
