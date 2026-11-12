@@ -1,0 +1,15 @@
+panel_custom:
+  - name: Marketplace
+    sidebar_title: Marketplace
+    sidebar_icon: mdi:store
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: marketplace/browse
+    embed_iframe: true
+    require_admin: true
+  - name: Tools
+    sidebar_title: Tools
+    sidebar_icon: mdi:hammer
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: config/tools
+    embed_iframe: true
+    require_admin: true
