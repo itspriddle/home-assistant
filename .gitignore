@@ -20,6 +20,8 @@ config/www/community/
 config/www/media/ha-bambulab
 config/themes/
 config/.cache/
+config/image/
+config/.ha_mcp/
 
 # Misc
 *.pyc
